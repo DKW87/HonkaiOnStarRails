@@ -7,8 +7,6 @@ import javafx.scene.control.Label;
 public class MonitoringController {
     @FXML
     private Label monitoringLabel;
-    @FXML
-    private Label welcomeText;
 
     private MonitoringService monitoringService;
 
@@ -16,11 +14,6 @@ public class MonitoringController {
     private void initialize() {
         monitoringService = new MonitoringService(monitoringLabel);
         monitoringService.start();
-    }
-
-    @FXML
-    private void onHelloButtonClick() {
-        welcomeText.setText("Welcome to JavaFX Application!");
     }
 
     private void shutdown() {
