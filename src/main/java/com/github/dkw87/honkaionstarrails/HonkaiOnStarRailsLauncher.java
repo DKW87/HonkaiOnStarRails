@@ -11,7 +11,7 @@ public class HonkaiOnStarRailsLauncher extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HonkaiOnStarRailsLauncher.class.getResource("view/MonitorView.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
+        Scene scene = new Scene(fxmlLoader.load(), 300, 25);
         stage.setTitle("Honkai: On Star Rails");
         stage.setScene(scene);
         stage.setAlwaysOnTop(true);
