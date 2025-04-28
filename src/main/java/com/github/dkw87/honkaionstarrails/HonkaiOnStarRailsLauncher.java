@@ -17,7 +17,7 @@ public class HonkaiOnStarRailsLauncher extends Application {
         stage.setAlwaysOnTop(true);
         stage.show();
     }
-
+// setting up dev branche
     public static void main(String[] args) {
         launch();
     }
