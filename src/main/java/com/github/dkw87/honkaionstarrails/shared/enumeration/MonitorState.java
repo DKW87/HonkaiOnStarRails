@@ -1,19 +1,25 @@
 package com.github.dkw87.honkaionstarrails.shared.enumeration;
 
 public enum MonitorState {
-    NOT_FOUND("Game is not running or was not found"),
-    FOUND("Game is running"),
-    IN_FOCUS("Game is in focus"),
-    IDLE("Idle. No combat sequence found"),
-    EXECUTING("Executing combat rules");
+    NOT_FOUND("Game is not running or was not found", "-fx-text-fill: red;"),
+    FOUND("Game is running, but not in focus", "-fx-text-fill: orange;"),
+    IDLE("Idle. No combat sequence found", "-fx-text-fill: green;"),
+    EXECUTING("Executing combat rules", "-fx-text-fill: blue;");
 
     private final String labelText;
+    private final String labelStyle;
 
-    MonitorState(String labelText) {
+    MonitorState(String labelText, String labelStyle) {
         this.labelText = labelText;
+        this.labelStyle = labelStyle;
     }
 
     public String getLabelText() {
         return labelText;
     }
+
+    public String getLabelStyle() {
+        return labelStyle;
+    }
+
 }

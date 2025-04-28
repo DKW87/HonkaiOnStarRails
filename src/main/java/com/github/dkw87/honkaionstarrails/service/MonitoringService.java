@@ -3,6 +3,7 @@ package com.github.dkw87.honkaionstarrails.service;
 import com.github.dkw87.honkaionstarrails.shared.enumeration.MonitorState;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
+import com.sun.jna.ptr.IntByReference;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.scene.control.Label;
@@ -11,10 +12,11 @@ import javafx.util.Duration;
 public class MonitoringService {
 
     private static final String HSR_WINDOW_TITLE = "Honkai: Star Rail";
-    private static final int RECHECK_PERIOD = 200;
+    private static final int RECHECK_PERIOD = 500;
+
+    private final Label monitorLabel;
 
     private ScheduledService<MonitorState> monitoringService;
-    private Label monitorLabel;
 
     public MonitoringService(Label statusLabel) {
         monitorLabel = statusLabel;
@@ -34,15 +36,32 @@ public class MonitoringService {
     }
 
     private void startMonitoring() {
-        monitoringService = new ScheduledService<MonitorState>() {
+        monitoringService = new ScheduledService<>() {
 
             @Override
             protected Task<MonitorState> createTask() {
-                return new Task<MonitorState>() {
+                return new Task<>() {
                     @Override
                     protected MonitorState call() {
-                        WinDef.HWND hwnd = User32.INSTANCE.FindWindow(null, HSR_WINDOW_TITLE);
-                        return hwnd != null ? MonitorState.FOUND : MonitorState.NOT_FOUND;
+                        WinDef.HWND gameWindow = User32.INSTANCE.FindWindow(null, HSR_WINDOW_TITLE);
+
+                        if (gameWindow == null) {
+                            return MonitorState.NOT_FOUND;
+                        }
+
+                        WinDef.HWND focusWindow = User32.INSTANCE.GetForegroundWindow();
+
+                        IntByReference gamePid = new IntByReference();
+                        IntByReference focusPid = new IntByReference();
+
+                        User32.INSTANCE.GetWindowThreadProcessId(gameWindow, gamePid);
+                        User32.INSTANCE.GetWindowThreadProcessId(focusWindow, focusPid);
+
+                        if (focusPid.getValue() == gamePid.getValue()) {
+                            return MonitorState.IDLE;
+                        } else {
+                            return MonitorState.FOUND;
+                        }
                     }
                 };
             }
@@ -52,22 +71,13 @@ public class MonitoringService {
 
         monitoringService.setOnSucceeded(event -> {
             MonitorState monitorStatus = monitoringService.getValue();
-            updateStatus(monitorStatus);
+            updateLabel(monitorStatus);
         });
     }
 
-    private void updateStatus(MonitorState state) {
-        System.out.println(state.getLabelText());
-        switch (state) {
-            case FOUND:
-                monitorLabel.setText(state.name());
-                monitorLabel.setStyle("-fx-text-fill: green;");
-            case NOT_FOUND:
-                monitorLabel.setText(state.name());
-                monitorLabel.setStyle("-fx-text-fill: red;");
-            default:
-                monitorLabel.setText("Gamestate unknown");
-        }
+    private void updateLabel(MonitorState state) {
+        monitorLabel.setText(state.getLabelText());
+        monitorLabel.setStyle(state.getLabelStyle());
     }
 
 
