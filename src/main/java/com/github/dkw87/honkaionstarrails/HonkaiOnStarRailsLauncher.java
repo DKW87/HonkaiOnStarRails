@@ -14,7 +14,7 @@ public class HonkaiOnStarRailsLauncher extends Application {
         Scene scene = new Scene(fxmlLoader.load(), 320, 240);
         stage.setTitle("Hello!");
         stage.setScene(scene);
-        stage.isAlwaysOnTop();
+        stage.setAlwaysOnTop(true);
         stage.show();
     }
 
