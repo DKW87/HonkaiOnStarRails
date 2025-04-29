@@ -78,7 +78,6 @@ public class GameStateService {
     }
 
     private GameState setGameState(GameState state) {
-        System.out.println(state);
         gameState = state;
         return gameState;
     }
