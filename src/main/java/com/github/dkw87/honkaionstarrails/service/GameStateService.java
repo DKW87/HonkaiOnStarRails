@@ -9,9 +9,10 @@ import javafx.util.Duration;
 
 public class GameStateService {
 
-    private static final int SLOW_RECHECK = 1000;
-    private static final int NORMAL_RECHECK = 500;
-    private static final int FAST_RECHECK = 100;
+    // polling in MS
+    private static final int SLOW_POLL = 1000;
+    private static final int NORMAL_POLL = 500;
+    private static final int FAST_POLL = 100;
 
     private final Label stateLabel;
     private final GameMonitorService gameMonitorService;
@@ -60,20 +61,20 @@ public class GameStateService {
             }
         };
 
-        stateService.setPeriod(Duration.millis(SLOW_RECHECK));
+        stateService.setPeriod(Duration.millis(SLOW_POLL));
 
         stateService.setOnSucceeded(event -> {
             GameState monitorStatus = stateService.getValue();
             updateLabel(monitorStatus);
-            adjustPolling();
+            adjustPollingByState();
         });
     }
 
-    private void adjustPolling() {
+    private void adjustPollingByState() {
         if (gameState == GameState.NOT_FOUND || gameState == GameState.FOUND) {
-            stateService.setPeriod(Duration.millis(SLOW_RECHECK));
+            stateService.setPeriod(Duration.millis(SLOW_POLL));
         } else {
-            stateService.setPeriod(Duration.millis(NORMAL_RECHECK));
+            stateService.setPeriod(Duration.millis(NORMAL_POLL));
         }
     }
 
