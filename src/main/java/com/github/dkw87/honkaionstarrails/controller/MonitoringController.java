@@ -1,30 +1,23 @@
 package com.github.dkw87.honkaionstarrails.controller;
 
-import com.github.dkw87.honkaionstarrails.service.MonitoringService;
+import com.github.dkw87.honkaionstarrails.service.GameStateService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
 public class MonitoringController {
     @FXML
     private Label monitoringLabel;
-    @FXML
-    private Label welcomeText;
 
-    private MonitoringService monitoringService;
+    private GameStateService gameStateService;
 
     @FXML
     private void initialize() {
-        monitoringService = new MonitoringService(monitoringLabel);
-        monitoringService.start();
-    }
-
-    @FXML
-    private void onHelloButtonClick() {
-        welcomeText.setText("Welcome to JavaFX Application!");
+        gameStateService = new GameStateService(monitoringLabel);
+        gameStateService.start();
     }
 
     private void shutdown() {
-        monitoringService.stop();
+        gameStateService.stop();
     }
 
 }
