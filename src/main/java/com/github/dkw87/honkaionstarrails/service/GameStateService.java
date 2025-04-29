@@ -1,0 +1,92 @@
+package com.github.dkw87.honkaionstarrails.service;
+
+import com.github.dkw87.honkaionstarrails.service.monitor.GameMonitorService;
+import com.github.dkw87.honkaionstarrails.shared.enumeration.GameState;
+import javafx.concurrent.ScheduledService;
+import javafx.concurrent.Task;
+import javafx.scene.control.Label;
+import javafx.util.Duration;
+
+public class GameStateService {
+
+    private static final int SLOW_RECHECK = 1000;
+    private static final int NORMAL_RECHECK = 500;
+    private static final int FAST_RECHECK = 100;
+
+    private final Label stateLabel;
+    private final GameMonitorService gameMonitorService;
+
+    public static volatile GameState gameState;
+
+    private ScheduledService<GameState> stateService;
+
+    public GameStateService(Label statusLabel) {
+        stateLabel = statusLabel;
+        this.gameMonitorService = new GameMonitorService();
+        startMonitoring();
+    }
+
+    public void start() {
+        if (stateService != null) {
+            stateService.restart();
+        }
+    }
+
+    public void stop() {
+        if (stateService != null) {
+            stateService.cancel();
+        }
+    }
+
+    private void startMonitoring() {
+        stateService = new ScheduledService<>() {
+
+            @Override
+            protected Task<GameState> createTask() {
+                return new Task<>() {
+                    @Override
+                    protected GameState call() {
+                        if (!gameMonitorService.isGameRunning()) {
+                            return setGameState(GameState.NOT_FOUND);
+                        }
+
+                        if (gameMonitorService.isGameFocused()) {
+                            return setGameState(GameState.IDLE);
+                        } else {
+                            return setGameState(GameState.FOUND);
+                        }
+                    }
+                };
+            }
+        };
+
+        stateService.setPeriod(Duration.millis(SLOW_RECHECK));
+
+        stateService.setOnSucceeded(event -> {
+            GameState monitorStatus = stateService.getValue();
+            updateLabel(monitorStatus);
+            adjustPolling();
+        });
+    }
+
+    private void adjustPolling() {
+        if (gameState == GameState.NOT_FOUND || gameState == GameState.FOUND) {
+            stateService.setPeriod(Duration.millis(SLOW_RECHECK));
+        } else {
+            stateService.setPeriod(Duration.millis(NORMAL_RECHECK));
+        }
+    }
+
+    private GameState setGameState(GameState state) {
+        System.out.println(state);
+        gameState = state;
+        return gameState;
+    }
+
+    private void updateLabel(GameState state) {
+        stateLabel.setText(state.getLabelText());
+        stateLabel.setStyle(state.getLabelStyle());
+    }
+
+
+}
