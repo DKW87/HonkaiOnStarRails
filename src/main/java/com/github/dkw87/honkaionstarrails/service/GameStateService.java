@@ -7,17 +7,18 @@ import javafx.concurrent.Task;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
 
+
 public class GameStateService {
 
-    // polling in MS
+    public static volatile GameState gameState;
+
+    // polling in millis
     private static final int SLOW_POLL = 1000;
     private static final int NORMAL_POLL = 500;
     private static final int FAST_POLL = 100;
 
     private final Label stateLabel;
     private final GameMonitorService gameMonitorService;
-
-    public static volatile GameState gameState;
 
     private ScheduledService<GameState> stateService;
 
