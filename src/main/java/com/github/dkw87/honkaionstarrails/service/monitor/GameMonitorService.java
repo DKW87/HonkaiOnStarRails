@@ -6,11 +6,13 @@ import com.sun.jna.ptr.IntByReference;
 
 public class GameMonitorService {
 
+    public static volatile WinDef.HWND gameWindow = null;
+
     private static final String HSR_WINDOW_TITLE = "Honkai: Star Rail";
-    private static WinDef.HWND gameWindow = null;
+    private static final String HSR_WINDOW_CLASS = "UnityWndClass";
 
     public boolean isGameRunning() {
-        gameWindow = User32.INSTANCE.FindWindow(null, HSR_WINDOW_TITLE);
+        gameWindow = User32.INSTANCE.FindWindow(HSR_WINDOW_CLASS, HSR_WINDOW_TITLE);
         return gameWindow != null;
     }
 

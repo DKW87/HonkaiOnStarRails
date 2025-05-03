@@ -1,6 +1,7 @@
 package com.github.dkw87.honkaionstarrails.service;
 
 import com.github.dkw87.honkaionstarrails.service.monitor.GameMonitorService;
+import com.github.dkw87.honkaionstarrails.shared.constant.KeyboardKey;
 import com.github.dkw87.honkaionstarrails.shared.enumeration.GameState;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
@@ -9,21 +10,24 @@ import javafx.util.Duration;
 
 public class GameStateService {
 
-    // polling in MS
+    public static volatile GameState gameState;
+
+    // polling in millis
     private static final int SLOW_POLL = 1000;
     private static final int NORMAL_POLL = 500;
     private static final int FAST_POLL = 100;
 
     private final Label stateLabel;
     private final GameMonitorService gameMonitorService;
-
-    public static volatile GameState gameState;
+    private final KeyInputService keyInputService;
 
     private ScheduledService<GameState> stateService;
 
     public GameStateService(Label statusLabel) {
         stateLabel = statusLabel;
         this.gameMonitorService = new GameMonitorService();
+        this.keyInputService = new KeyInputService();
+        keyInputService.initialize();
         startMonitoring();
     }
 
@@ -35,6 +39,7 @@ public class GameStateService {
 
     public void stop() {
         if (stateService != null) {
+            keyInputService.unregister();
             stateService.cancel();
         }
     }
@@ -67,6 +72,10 @@ public class GameStateService {
             GameState monitorStatus = stateService.getValue();
             updateLabel(monitorStatus);
             adjustPollingByState();
+            if (monitorStatus == GameState.IDLE) {
+                // test
+               keyInputService.pressKey(KeyboardKey.ESC);
+            }
         });
     }
 
