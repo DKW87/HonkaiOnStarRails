@@ -3,10 +3,13 @@ package com.github.dkw87.honkaionstarrails.service;
 import com.github.dkw87.honkaionstarrails.service.monitor.GameMonitorService;
 import com.github.dkw87.honkaionstarrails.shared.constant.KeyboardKey;
 import com.github.dkw87.honkaionstarrails.shared.enumeration.GameState;
+import javafx.application.Platform;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GameStateService {
 
@@ -20,6 +23,7 @@ public class GameStateService {
     private final Label stateLabel;
     private final GameMonitorService gameMonitorService;
     private final KeyInputService keyInputService;
+    private final AtomicBoolean shutdownRequested = new AtomicBoolean(false);
 
     private ScheduledService<GameState> stateService;
 
@@ -38,10 +42,17 @@ public class GameStateService {
     }
 
     public void stop() {
-        if (stateService != null) {
-            keyInputService.unregister();
-            stateService.cancel();
+        if (Platform.isFxApplicationThread()) {
+            if (stateService != null) {
+                stateService.cancel();
+            } else {
+                shutdownRequested.set(true);
+            }
         }
+    }
+
+    public KeyInputService getKeyInputService() {
+        return keyInputService;
     }
 
     private void startMonitoring() {
@@ -52,6 +63,12 @@ public class GameStateService {
                 return new Task<>() {
                     @Override
                     protected GameState call() {
+
+                        if (shutdownRequested.get()) {
+                            threadSafeStop();
+                            return GameState.SHUTDOWN;
+                        }
+
                         if (!gameMonitorService.isGameRunning()) {
                             return setGameState(GameState.NOT_FOUND);
                         }
@@ -74,7 +91,7 @@ public class GameStateService {
             adjustPollingByState();
             if (monitorStatus == GameState.IDLE) {
                 // test
-               keyInputService.pressKey(KeyboardKey.ESC);
+                keyInputService.pressKey(KeyboardKey.ESC);
             }
         });
     }
@@ -97,5 +114,12 @@ public class GameStateService {
         stateLabel.setStyle(state.getLabelStyle());
     }
 
+    private void threadSafeStop() {
+        Platform.runLater(() -> {
+            if (stateService != null) {
+                stateService.cancel();
+            }
+        });
+    }
 
 }

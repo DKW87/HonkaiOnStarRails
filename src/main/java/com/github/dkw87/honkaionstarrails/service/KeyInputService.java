@@ -8,36 +8,31 @@ import java.util.logging.Logger;
 
 public class KeyInputService {
 
-    private static final Logger logger = Logger.getLogger(KeyInputService.class.getName());
-
     public void initialize() {
         try {
-            // Disable logging
+            // disable JNativeHook lib logging
             Logger.getLogger(GlobalScreen.class.getPackage().getName()).setLevel(Level.OFF);
 
-            // Register native hook
             GlobalScreen.registerNativeHook();
-            logger.info("JNativeHook initialized successfully");
+            System.out.println("JNativeHook initialized successfully");
         } catch (NativeHookException e) {
-            logger.severe("Error initializing JNativeHook: " + e.getMessage());
+            System.err.println("Error initializing JNativeHook: " + e.getMessage());
         }
     }
 
     public void unregister() {
         try {
             GlobalScreen.unregisterNativeHook();
-            logger.info("JNativeHook unregistered successfully");
         } catch (NativeHookException e) {
-            logger.severe("Error unregistering JNativeHook: " + e.getMessage());
+            System.err.println("Error unregistering JNativeHook: " + e.getMessage());
         }
     }
 
     public void pressKey(int keyCode) {
         try {
-            logger.info("Pressing key");
             NativeKeyEvent pressEvent = new NativeKeyEvent(
                     NativeKeyEvent.NATIVE_KEY_PRESSED,
-                    0,  // modifiers
+                    0,
                     keyCode,
                     keyCode,
                     NativeKeyEvent.CHAR_UNDEFINED
@@ -48,7 +43,7 @@ public class KeyInputService {
 
             NativeKeyEvent releaseEvent = new NativeKeyEvent(
                     NativeKeyEvent.NATIVE_KEY_RELEASED,
-                    0,  // modifiers
+                    0,
                     keyCode,
                     keyCode,
                     NativeKeyEvent.CHAR_UNDEFINED
@@ -56,7 +51,7 @@ public class KeyInputService {
             GlobalScreen.postNativeEvent(releaseEvent);
 
         } catch (Exception e) {
-            logger.severe("Error posting key event: " + e.getMessage());
+            System.err.println("Error posting key event: " + e.getMessage());
         }
     }
 
@@ -67,5 +62,4 @@ public class KeyInputService {
             Thread.currentThread().interrupt();
         }
     }
-
 }

@@ -1,6 +1,7 @@
 package com.github.dkw87.honkaionstarrails.shared.enumeration;
 
 public enum GameState {
+    SHUTDOWN("Shutting down...", "-fx-text-fill: black;"),
     NOT_FOUND("Game is not running or was not detected", "-fx-text-fill: red;"),
     FOUND("Game is running, but not in focus", "-fx-text-fill: orange;"),
     IDLE("HOSR is waiting for combat to begin", "-fx-text-fill: green;"),
