@@ -1,6 +1,5 @@
 package com.github.dkw87.honkaionstarrails.service;
 
-import com.github.dkw87.honkaionstarrails.service.monitor.GameMonitorService;
 import com.github.dkw87.honkaionstarrails.shared.constant.KeyboardKey;
 import com.github.dkw87.honkaionstarrails.shared.enumeration.GameState;
 import javafx.application.Platform;
