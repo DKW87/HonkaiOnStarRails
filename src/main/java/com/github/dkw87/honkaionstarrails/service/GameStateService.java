@@ -1,12 +1,12 @@
 package com.github.dkw87.honkaionstarrails.service;
 
 import com.github.dkw87.honkaionstarrails.service.monitor.GameMonitorService;
+import com.github.dkw87.honkaionstarrails.shared.constant.KeyboardKey;
 import com.github.dkw87.honkaionstarrails.shared.enumeration.GameState;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
-
 
 public class GameStateService {
 
@@ -19,12 +19,15 @@ public class GameStateService {
 
     private final Label stateLabel;
     private final GameMonitorService gameMonitorService;
+    private final KeyInputService keyInputService;
 
     private ScheduledService<GameState> stateService;
 
     public GameStateService(Label statusLabel) {
         stateLabel = statusLabel;
         this.gameMonitorService = new GameMonitorService();
+        this.keyInputService = new KeyInputService();
+        keyInputService.initialize();
         startMonitoring();
     }
 
@@ -36,6 +39,7 @@ public class GameStateService {
 
     public void stop() {
         if (stateService != null) {
+            keyInputService.unregister();
             stateService.cancel();
         }
     }
@@ -68,6 +72,10 @@ public class GameStateService {
             GameState monitorStatus = stateService.getValue();
             updateLabel(monitorStatus);
             adjustPollingByState();
+            if (monitorStatus == GameState.IDLE) {
+                // test
+               keyInputService.pressKey(KeyboardKey.ESC);
+            }
         });
     }
 
