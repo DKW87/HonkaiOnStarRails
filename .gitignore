@@ -11,6 +11,10 @@ target/
 *.iws
 *.iml
 *.ipr
+/.idea/
+/.mvn
+mvnw.cmd
+mvnw
 
 ### Eclipse ###
 .apt_generated
@@ -36,4 +40,3 @@ build/
 
 ### Mac OS ###
 .DS_Store
-/.idea/

@@ -1,4 +1,4 @@
-package com.github.dkw87.honkaionstarrails.service.monitor;
+package com.github.dkw87.honkaionstarrails.service;
 
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;

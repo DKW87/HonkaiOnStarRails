@@ -1,5 +1,9 @@
 package com.github.dkw87.honkaionstarrails;
 
+import com.github.dkw87.honkaionstarrails.controller.MonitoringController;
+import com.github.dkw87.honkaionstarrails.service.CleanupService;
+import com.github.dkw87.honkaionstarrails.service.GameStateService;
+import com.github.dkw87.honkaionstarrails.service.KeyInputService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -10,10 +14,20 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class HonkaiOnStarRailsLauncher extends Application {
+
+    private FXMLLoader fxmlLoader;
+    private CleanupService cleanupService;
+
     @Override
     public void start(Stage stage) throws IOException {
         initializeStage(stage);
+        registerCleanupService();
         stage.show();
+    }
+
+    @Override
+    public void stop() {
+        cleanupService.unregister();
     }
 
     public static void main(String[] args) {
@@ -21,7 +35,7 @@ public class HonkaiOnStarRailsLauncher extends Application {
     }
 
     private void initializeStage(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HonkaiOnStarRailsLauncher.class.getResource("view/MonitorView.fxml"));
+        this.fxmlLoader = new FXMLLoader(HonkaiOnStarRailsLauncher.class.getResource("view/MonitorView.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 300, 25);
         stage.setTitle("Honkai: On Star Rails");
         stage.setScene(scene);
@@ -36,4 +50,12 @@ public class HonkaiOnStarRailsLauncher extends Application {
         stage.setX(x);
         stage.setY(y);
     }
+
+    private void registerCleanupService() {
+        MonitoringController controller = fxmlLoader.getController();
+        GameStateService gameStateService = controller.getGameStateService();
+        KeyInputService keyInputService = gameStateService.getKeyInputService();
+        this.cleanupService = new CleanupService(gameStateService, keyInputService);
+    }
+
 }

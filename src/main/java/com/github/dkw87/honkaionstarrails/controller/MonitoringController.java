@@ -16,9 +16,8 @@ public class MonitoringController {
         gameStateService.start();
     }
 
-    // todo: implement properly when closing the program
-    private void shutdown() {
-        gameStateService.stop();
+    public GameStateService getGameStateService() {
+        return gameStateService;
     }
 
 }

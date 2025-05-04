@@ -11,5 +11,6 @@ module com.github.dkw87.honkaionstarrails {
     opens com.github.dkw87.honkaionstarrails to javafx.fxml;
     exports com.github.dkw87.honkaionstarrails;
     exports com.github.dkw87.honkaionstarrails.controller;
+    exports com.github.dkw87.honkaionstarrails.service;
     opens com.github.dkw87.honkaionstarrails.controller to javafx.fxml;
 }
