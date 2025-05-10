@@ -74,7 +74,7 @@ public class MemoryReadingService {
      * Finds and stores the base addresses of key modules
      */
     private boolean findModuleBaseAddress() {
-        // Step 1: Enumerate modules
+        // Enumerate modules
         WinDef.HMODULE[] hModules = new WinDef.HMODULE[1024];
         IntByReference lpcbNeeded = new IntByReference();
 
@@ -93,10 +93,10 @@ public class MemoryReadingService {
         int modulesCount = lpcbNeeded.getValue() / Native.getNativeSize(WinDef.HMODULE.class);
         System.out.println("Found " + modulesCount + " modules");
 
-        // Step 2: Find modules by size, focusing on very large ones
-        // Based on your info, GameAssembly.dll might be 100MB+ for Honkai Star Rail
+        // Just find the largest module (GameAssembly.dll)
         long largestModuleSize = 0;
         long largestModuleAddress = 0;
+        int largestModuleIndex = -1;
 
         for (int i = 0; i < modulesCount; i++) {
             try {
@@ -108,74 +108,26 @@ public class MemoryReadingService {
                         info.size()
                 );
 
-                if (success) {
-                    long sizeInMB = info.SizeOfImage / (1024 * 1024);
-                    long address = Pointer.nativeValue(hModules[i].getPointer());
-
-                    System.out.println("Module " + i + " at 0x" + Long.toHexString(address) +
-                            " size: " + sizeInMB + " MB");
-
-                    // Keep track of the largest module
-                    if (info.SizeOfImage > largestModuleSize) {
-                        largestModuleSize = info.SizeOfImage;
-                        largestModuleAddress = address;
-                    }
-
-                    // If this module is very large (over 100MB), it's likely GameAssembly.dll
-                    if (sizeInMB > 100) {
-                        System.out.println("Found very large module that's likely GameAssembly.dll!");
-
-                        // Verify by trying to read from the combat offset
-                        try {
-                            byte value = readByteFromAddress(address + CombatOffsets.COMBAT_START);
-                            System.out.println("Confirmed by reading combat value: " + value);
-
-                            moduleBaseAddresses.put(CombatOffsets.GAME_ASSEMBLY_MODULE, address);
-                            return true;
-                        } catch (Exception e) {
-                            System.out.println("But reading combat offset failed, trying next module");
-                        }
-                    }
+                if (success && info.SizeOfImage > largestModuleSize) {
+                    largestModuleSize = info.SizeOfImage;
+                    largestModuleAddress = Pointer.nativeValue(hModules[i].getPointer());
+                    largestModuleIndex = i;
                 }
             } catch (Exception e) {
                 // Skip this module if we can't get its info
             }
         }
 
-        // If we found a largest module but haven't returned yet, try using it
         if (largestModuleAddress != 0) {
-            System.out.println("Using largest module found (" +
-                    (largestModuleSize / (1024 * 1024)) + " MB) as fallback");
+            System.out.println("Found largest module (GameAssembly.dll) at 0x" +
+                    Long.toHexString(largestModuleAddress) +
+                    " size: " + (largestModuleSize / (1024 * 1024)) + " MB");
 
-            try {
-                byte value = readByteFromAddress(largestModuleAddress + CombatOffsets.COMBAT_START);
-                System.out.println("Successfully read combat value: " + value);
-
-                moduleBaseAddresses.put(CombatOffsets.GAME_ASSEMBLY_MODULE, largestModuleAddress);
-                return true;
-            } catch (Exception e) {
-                System.out.println("Reading from largest module failed");
-            }
+            moduleBaseAddresses.put(CombatOffsets.GAME_ASSEMBLY_MODULE, largestModuleAddress);
+            return true;
         }
 
-        // Fall back to the original approach of checking all modules
-        System.out.println("Trying all modules as final fallback...");
-        for (int i = 0; i < modulesCount; i++) {
-            long address = Pointer.nativeValue(hModules[i].getPointer());
-
-            try {
-                byte value = readByteFromAddress(address + CombatOffsets.COMBAT_START);
-                System.out.println("Found working module! Combat value: " + value);
-
-                moduleBaseAddresses.put(CombatOffsets.GAME_ASSEMBLY_MODULE, address);
-                return true;
-            } catch (Exception e) {
-                // Not the right module, continue
-            }
-        }
-
-        // If we get here, we couldn't find a module that works
-        System.out.println("Failed to find GameAssembly.dll module");
+        System.out.println("Failed to find any modules with size information");
         return false;
     }
 
