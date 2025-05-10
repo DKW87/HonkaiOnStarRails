@@ -22,6 +22,7 @@ public class GameStateService {
     private final Label stateLabel;
     private final GameMonitorService gameMonitorService;
     private final KeyInputService keyInputService;
+    private final MemoryReadingService memoryReadingService;
     private final AtomicBoolean shutdownRequested = new AtomicBoolean(false);
 
     private ScheduledService<GameState> stateService;
@@ -30,6 +31,7 @@ public class GameStateService {
         stateLabel = statusLabel;
         this.gameMonitorService = new GameMonitorService();
         this.keyInputService = new KeyInputService();
+        this.memoryReadingService = new MemoryReadingService();
         keyInputService.initialize();
         startMonitoring();
     }
@@ -48,6 +50,7 @@ public class GameStateService {
                 shutdownRequested.set(true);
             }
         }
+        memoryReadingService.cleanup();
     }
 
     public KeyInputService getKeyInputService() {
@@ -69,12 +72,19 @@ public class GameStateService {
                         }
 
                         if (!gameMonitorService.isGameRunning()) {
+                            memoryReadingService.cleanup();
                             return setGameState(GameState.NOT_FOUND);
                         }
 
                         if (gameMonitorService.isGameFocused()) {
-                            return setGameState(GameState.IDLE);
+
+                            if (memoryReadingService.isInCombat()) {
+                                return setGameState(GameState.EXECUTING);
+                            } else {
+                                return setGameState(GameState.IDLE);
+                            }
                         } else {
+                            memoryReadingService.cleanup();
                             return setGameState(GameState.FOUND);
                         }
                     }
@@ -88,7 +98,7 @@ public class GameStateService {
             GameState monitorStatus = stateService.getValue();
             updateLabel(monitorStatus);
             adjustPollingByState();
-            if (monitorStatus == GameState.IDLE) {
+            if (monitorStatus == GameState.EXECUTING) {
                 // test
                 keyInputService.pressKey(KeyboardKey.ESC);
             }
@@ -96,10 +106,10 @@ public class GameStateService {
     }
 
     private void adjustPollingByState() {
-        if (gameState == GameState.NOT_FOUND || gameState == GameState.FOUND) {
-            stateService.setPeriod(Duration.millis(SLOW_POLL));
-        } else {
-            stateService.setPeriod(Duration.millis(NORMAL_POLL));
+        switch (gameState) {
+            case GameState.EXECUTING -> stateService.setPeriod(Duration.millis(FAST_POLL));
+            case GameState.IDLE -> stateService.setPeriod(Duration.millis(NORMAL_POLL));
+            default -> stateService.setPeriod(Duration.millis(SLOW_POLL));
         }
     }
 
@@ -119,6 +129,7 @@ public class GameStateService {
                 stateService.cancel();
             }
         });
+        memoryReadingService.cleanup();
     }
 
 }

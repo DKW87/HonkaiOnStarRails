@@ -1,13 +1,13 @@
 package com.github.dkw87.honkaionstarrails.service;
 
 import com.github.dkw87.honkaionstarrails.service.constant.CombatOffsets;
-import com.github.dkw87.honkaionstarrails.service.win32interface.Kernel32Extended;
 import com.github.dkw87.honkaionstarrails.service.win32interface.PsapiExtended;
 import com.github.dkw87.honkaionstarrails.service.win32interface.User32Extended;
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.Psapi;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.ptr.IntByReference;
@@ -74,47 +74,108 @@ public class MemoryReadingService {
      * Finds and stores the base addresses of key modules
      */
     private boolean findModuleBaseAddress() {
+        // Step 1: Enumerate modules
         WinDef.HMODULE[] hModules = new WinDef.HMODULE[1024];
         IntByReference lpcbNeeded = new IntByReference();
 
-        if (!PsapiExtended.INSTANCE.EnumProcessModules(processHandle, hModules,
-                hModules.length * Native.getNativeSize(WinDef.HMODULE.class), lpcbNeeded)) {
+        boolean enumSuccess = PsapiExtended.INSTANCE.EnumProcessModules(
+                processHandle,
+                hModules,
+                hModules.length * Native.getNativeSize(WinDef.HMODULE.class),
+                lpcbNeeded
+        );
+
+        if (!enumSuccess) {
             System.out.println("Failed to enumerate modules: " + Native.getLastError());
             return false;
         }
 
         int modulesCount = lpcbNeeded.getValue() / Native.getNativeSize(WinDef.HMODULE.class);
-        char[] buffer = new char[1024];
+        System.out.println("Found " + modulesCount + " modules");
+
+        // Step 2: Find modules by size, focusing on very large ones
+        // Based on your info, GameAssembly.dll might be 100MB+ for Honkai Star Rail
+        long largestModuleSize = 0;
+        long largestModuleAddress = 0;
 
         for (int i = 0; i < modulesCount; i++) {
-            PsapiExtended.INSTANCE.GetModuleBaseName(processHandle, hModules[i], buffer, buffer.length);
-            String moduleName = Native.toString(buffer);
+            try {
+                Psapi.MODULEINFO info = new Psapi.MODULEINFO();
+                boolean success = PsapiExtended.INSTANCE.GetModuleInformation(
+                        processHandle,
+                        hModules[i],
+                        info,
+                        info.size()
+                );
 
-            if (moduleName.equalsIgnoreCase(CombatOffsets.GAME_ASSEMBLY_MODULE)) {
-                WinDef.HMODULE moduleHandle = Kernel32Extended.INSTANCE.GetModuleHandleA(moduleName);
-                if (moduleHandle != null) {
-                    moduleBaseAddresses.put(moduleName, Pointer.nativeValue(moduleHandle.getPointer()));
-                    return true;
+                if (success) {
+                    long sizeInMB = info.SizeOfImage / (1024 * 1024);
+                    long address = Pointer.nativeValue(hModules[i].getPointer());
+
+                    System.out.println("Module " + i + " at 0x" + Long.toHexString(address) +
+                            " size: " + sizeInMB + " MB");
+
+                    // Keep track of the largest module
+                    if (info.SizeOfImage > largestModuleSize) {
+                        largestModuleSize = info.SizeOfImage;
+                        largestModuleAddress = address;
+                    }
+
+                    // If this module is very large (over 100MB), it's likely GameAssembly.dll
+                    if (sizeInMB > 100) {
+                        System.out.println("Found very large module that's likely GameAssembly.dll!");
+
+                        // Verify by trying to read from the combat offset
+                        try {
+                            byte value = readByteFromAddress(address + CombatOffsets.COMBAT_START);
+                            System.out.println("Confirmed by reading combat value: " + value);
+
+                            moduleBaseAddresses.put(CombatOffsets.GAME_ASSEMBLY_MODULE, address);
+                            return true;
+                        } catch (Exception e) {
+                            System.out.println("But reading combat offset failed, trying next module");
+                        }
+                    }
                 }
+            } catch (Exception e) {
+                // Skip this module if we can't get its info
             }
         }
 
-        // Alternative approach if the above method fails
-        try {
-            for (int i = 0; i < modulesCount; i++) {
-                PsapiExtended.INSTANCE.GetModuleBaseName(processHandle, hModules[i], buffer, buffer.length);
-                String moduleName = Native.toString(buffer);
+        // If we found a largest module but haven't returned yet, try using it
+        if (largestModuleAddress != 0) {
+            System.out.println("Using largest module found (" +
+                    (largestModuleSize / (1024 * 1024)) + " MB) as fallback");
 
-                if (moduleName.equalsIgnoreCase(CombatOffsets.GAME_ASSEMBLY_MODULE)) {
-                    // Use the module handle directly from EnumProcessModules
-                    moduleBaseAddresses.put(moduleName, Pointer.nativeValue(hModules[i].getPointer()));
-                    return true;
-                }
+            try {
+                byte value = readByteFromAddress(largestModuleAddress + CombatOffsets.COMBAT_START);
+                System.out.println("Successfully read combat value: " + value);
+
+                moduleBaseAddresses.put(CombatOffsets.GAME_ASSEMBLY_MODULE, largestModuleAddress);
+                return true;
+            } catch (Exception e) {
+                System.out.println("Reading from largest module failed");
             }
-        } catch (Exception e) {
-            System.out.println("Error in alternative module base address method: " + e.getMessage());
         }
 
+        // Fall back to the original approach of checking all modules
+        System.out.println("Trying all modules as final fallback...");
+        for (int i = 0; i < modulesCount; i++) {
+            long address = Pointer.nativeValue(hModules[i].getPointer());
+
+            try {
+                byte value = readByteFromAddress(address + CombatOffsets.COMBAT_START);
+                System.out.println("Found working module! Combat value: " + value);
+
+                moduleBaseAddresses.put(CombatOffsets.GAME_ASSEMBLY_MODULE, address);
+                return true;
+            } catch (Exception e) {
+                // Not the right module, continue
+            }
+        }
+
+        // If we get here, we couldn't find a module that works
+        System.out.println("Failed to find GameAssembly.dll module");
         return false;
     }
 
@@ -124,26 +185,24 @@ public class MemoryReadingService {
      * @return true if in combat based on memory values
      */
     public boolean isInCombat() {
-        System.out.println("do I ever see this?");
         if (processHandle == null || moduleBaseAddresses.isEmpty()) {
             if (!initialize()) {
                 return false;
             }
         }
 
-        System.out.println("am I still in?");
         Long gameModuleBase = moduleBaseAddresses.get(CombatOffsets.GAME_ASSEMBLY_MODULE);
         if (gameModuleBase == null) {
             System.out.println("Game module base address not found");
             return false;
         }
 
-        System.out.println("still in???");
+
         // Read combat state indicators
         byte combatStart = readByteFromAddress(gameModuleBase + CombatOffsets.COMBAT_START);
         byte combatReady = readByteFromAddress(gameModuleBase + CombatOffsets.COMBAT_READY);
 
-        System.out.println("we in!!!!");
+
         // Logic to determine if in combat based on memory values
         // According to screenshots, value of 1 likely indicates combat is active
         if (combatStart > 0 || combatReady > 0) {
@@ -208,9 +267,10 @@ public class MemoryReadingService {
         );
 
         if (!success) {
+            int error = Native.getLastError();
             System.out.println("Failed to read byte from address: 0x" + Long.toHexString(address) +
-                    " Error: " + Native.getLastError());
-            return 0;
+                    " Error: " + error);
+            throw new RuntimeException("Read failed");
         }
 
         return buffer.getByte(0);
@@ -265,6 +325,7 @@ public class MemoryReadingService {
      */
     public void cleanup() {
         if (processHandle != null) {
+            System.out.println("Cleaning up process handle: " + processHandle);
             Kernel32.INSTANCE.CloseHandle(processHandle);
             processHandle = null;
         }
