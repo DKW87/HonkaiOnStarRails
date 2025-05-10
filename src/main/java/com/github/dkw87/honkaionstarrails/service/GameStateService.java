@@ -99,8 +99,16 @@ public class GameStateService {
             updateLabel(monitorStatus);
             adjustPollingByState();
             if (monitorStatus == GameState.EXECUTING) {
+
                 // test
-                keyInputService.pressKey(KeyboardKey.ESC);
+                if (memoryReadingService.getSkillPoints() > 0) {
+                    System.out.println("pressing E");
+                    keyInputService.pressKey(KeyboardKey.E);
+                } else {
+                    System.out.println("pressing Q");
+                    keyInputService.pressKey(KeyboardKey.Q);
+                }
+
             }
         });
     }
