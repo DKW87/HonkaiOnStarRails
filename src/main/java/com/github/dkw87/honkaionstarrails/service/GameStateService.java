@@ -23,7 +23,6 @@ public class GameStateService {
     private final GameMonitorService gameMonitorService;
     private final KeyInputService keyInputService;
     private final AtomicBoolean shutdownRequested = new AtomicBoolean(false);
-    private final AtomicBoolean inCombat = new AtomicBoolean(false);
 
     private ScheduledService<GameState> stateService;
 
@@ -67,10 +66,6 @@ public class GameStateService {
                         if (shutdownRequested.get()) {
                             threadSafeStop();
                             return setGameState(GameState.SHUTDOWN);
-                        }
-
-                        if (inCombat.get()) {
-                            return setGameState(GameState.EXECUTING);
                         }
 
                         if (!gameMonitorService.isGameRunning()) {
