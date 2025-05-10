@@ -1,4 +1,4 @@
-package com.github.dkw87.honkaionstarrails.shared.enumeration;
+package com.github.dkw87.honkaionstarrails.service.enumeration;
 
 public enum GameState {
     SHUTDOWN("Shutting down...", "-fx-text-fill: black;"),
