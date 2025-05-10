@@ -1,7 +1,7 @@
 package com.github.dkw87.honkaionstarrails.service;
 
-import com.github.dkw87.honkaionstarrails.shared.constant.KeyboardKey;
-import com.github.dkw87.honkaionstarrails.shared.enumeration.GameState;
+import com.github.dkw87.honkaionstarrails.service.constant.KeyboardKey;
+import com.github.dkw87.honkaionstarrails.service.enumeration.GameState;
 import javafx.application.Platform;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
@@ -23,6 +23,7 @@ public class GameStateService {
     private final GameMonitorService gameMonitorService;
     private final KeyInputService keyInputService;
     private final AtomicBoolean shutdownRequested = new AtomicBoolean(false);
+    private final AtomicBoolean inCombat = new AtomicBoolean(false);
 
     private ScheduledService<GameState> stateService;
 
@@ -65,7 +66,11 @@ public class GameStateService {
 
                         if (shutdownRequested.get()) {
                             threadSafeStop();
-                            return GameState.SHUTDOWN;
+                            return setGameState(GameState.SHUTDOWN);
+                        }
+
+                        if (inCombat.get()) {
+                            return setGameState(GameState.EXECUTING);
                         }
 
                         if (!gameMonitorService.isGameRunning()) {

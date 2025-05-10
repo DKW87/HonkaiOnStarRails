@@ -1,4 +1,4 @@
-package com.github.dkw87.honkaionstarrails.shared.constant;
+package com.github.dkw87.honkaionstarrails.service.constant;
 
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 
