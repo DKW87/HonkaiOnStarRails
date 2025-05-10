@@ -154,16 +154,7 @@ public class MemoryReadingService {
         byte combatStart = readByteFromAddress(gameModuleBase + CombatOffsets.COMBAT_START);
         byte combatReady = readByteFromAddress(gameModuleBase + CombatOffsets.COMBAT_READY);
 
-
-        // Logic to determine if in combat based on memory values
-        // According to screenshots, value of 1 likely indicates combat is active
-        if (combatStart > 0 || combatReady > 0) {
-            System.out.println("combat started broski!!");
-            return true;
-        } else {
-            System.out.println("combat has not yet started");
-            return false;
-        }
+        return combatStart > 0 || combatReady > 0;
     }
 
     /**
@@ -184,25 +175,28 @@ public class MemoryReadingService {
             return -1;
         }
 
-        // Follow pointer chain to get to skill points
+        // Start with the base pointer
         long address = gameModuleBase + CombatOffsets.SKILLPOINTS_BASE;
 
-        // Read pointer at base address
+        // Read first pointer
         address = readLongFromAddress(address);
-        if (address == 0) {
-            return -1;
-        }
+        if (address == 0) return -1;
 
-        // Follow the chain of offsets to reach the final value
+        // Follow chain EXCEPT for the last offset
         for (int i = 0; i < CombatOffsets.SKILLPOINTS_PTR_CHAIN.length - 1; i++) {
-            address = readLongFromAddress(address + CombatOffsets.SKILLPOINTS_PTR_CHAIN[i]);
-            if (address == 0) {
-                return -1;
-            }
-        }
+            // Get next address to read from
+            long nextAddr = address + CombatOffsets.SKILLPOINTS_PTR_CHAIN[i];
 
-        // Read the final value (int) at the last offset
-        return readIntFromAddress(address + CombatOffsets.SKILLPOINTS_PTR_CHAIN[CombatOffsets.SKILLPOINTS_PTR_CHAIN.length - 1]);
+            // If this is the last step, read the int value instead of a pointer
+            if (i == CombatOffsets.SKILLPOINTS_PTR_CHAIN.length - 2) {
+                return readIntFromAddress(nextAddr);
+            }
+
+            // Otherwise, follow the pointer
+            address = readLongFromAddress(nextAddr);
+            if (address == 0) return -1;
+        }
+        return -1;
     }
 
     /**
