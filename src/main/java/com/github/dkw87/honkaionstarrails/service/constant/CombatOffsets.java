@@ -9,7 +9,7 @@ public class CombatOffsets {
     public static final long COMBAT_READY = 0x4264EE8L;
 
     public static final long SKILLPOINTS_BASE = 0x4272180L;
-    public static final int[] SKILLPOINTS_OFFSETS = {
+    public static final int[] SKILLPOINTS_PTR_CHAIN = {
             0x318,
             0x20,
             0x18,
