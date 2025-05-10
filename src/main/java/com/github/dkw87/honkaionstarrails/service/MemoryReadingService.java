@@ -183,15 +183,15 @@ public class MemoryReadingService {
         }
 
         // Follow the chain of offsets to reach the final value
-        for (int i = 0; i < CombatOffsets.SKILLPOINTS_OFFSETS.length - 1; i++) {
-            address = readLongFromAddress(address + CombatOffsets.SKILLPOINTS_OFFSETS[i]);
+        for (int i = 0; i < CombatOffsets.SKILLPOINTS_PTR_CHAIN.length - 1; i++) {
+            address = readLongFromAddress(address + CombatOffsets.SKILLPOINTS_PTR_CHAIN[i]);
             if (address == 0) {
                 return -1;
             }
         }
 
         // Read the final value (int) at the last offset
-        return readIntFromAddress(address + CombatOffsets.SKILLPOINTS_OFFSETS[CombatOffsets.SKILLPOINTS_OFFSETS.length - 1]);
+        return readIntFromAddress(address + CombatOffsets.SKILLPOINTS_PTR_CHAIN[CombatOffsets.SKILLPOINTS_PTR_CHAIN.length - 1]);
     }
 
     /**
