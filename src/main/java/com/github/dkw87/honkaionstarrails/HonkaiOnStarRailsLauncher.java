@@ -42,7 +42,7 @@ public class HonkaiOnStarRailsLauncher extends Application {
         stage.setTitle("Honkai: On Star Rails");
         stage.setScene(scene);
         stage.setAlwaysOnTop(true);
-        stage.getIcons().add(new Image(Objects.requireNonNull(HonkaiOnStarRailsLauncher.class.getResourceAsStream("image/hosr_logo.png"))));
+        stage.getIcons().add(new Image(HonkaiOnStarRailsLauncher.class.getResourceAsStream("image/hosr_logo.png")));
         spawnWindowBottomRight(stage, scene);
     }
 
