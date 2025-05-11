@@ -1,6 +1,5 @@
 package com.github.dkw87.honkaionstarrails.service;
 
-import com.github.dkw87.honkaionstarrails.service.constant.KeyboardKey;
 import com.github.dkw87.honkaionstarrails.service.enumeration.GameState;
 import javafx.application.Platform;
 import javafx.concurrent.ScheduledService;
@@ -22,7 +21,7 @@ public class GameStateService {
     private final Label stateLabel;
     private final GameMonitorService gameMonitorService;
     private final KeyInputService keyInputService;
-    private final MemoryReadingService memoryReadingService;
+    private final CombatMonitorService combatMonitorService;
     private final AtomicBoolean shutdownRequested = new AtomicBoolean(false);
 
     private ScheduledService<GameState> stateService;
@@ -31,7 +30,7 @@ public class GameStateService {
         stateLabel = statusLabel;
         this.gameMonitorService = new GameMonitorService();
         this.keyInputService = new KeyInputService();
-        this.memoryReadingService = new MemoryReadingService();
+        this.combatMonitorService = new CombatMonitorService();
         keyInputService.initialize();
         startMonitoring();
     }
@@ -50,7 +49,7 @@ public class GameStateService {
                 shutdownRequested.set(true);
             }
         }
-        memoryReadingService.cleanup();
+        combatMonitorService.getMemoryReadingService().cleanup();
     }
 
     public KeyInputService getKeyInputService() {
@@ -72,19 +71,19 @@ public class GameStateService {
                         }
 
                         if (!gameMonitorService.isGameRunning()) {
-                            memoryReadingService.cleanup();
+                            combatMonitorService.getMemoryReadingService().cleanup();
                             return setGameState(GameState.NOT_FOUND);
                         }
 
                         if (gameMonitorService.isGameFocused()) {
 
-                            if (memoryReadingService.isInCombat()) {
+                            if (combatMonitorService.runMonitor()) {
                                 return setGameState(GameState.EXECUTING);
                             } else {
                                 return setGameState(GameState.IDLE);
                             }
                         } else {
-                            memoryReadingService.cleanup();
+                            combatMonitorService.getMemoryReadingService().cleanup();
                             return setGameState(GameState.FOUND);
                         }
                     }
@@ -98,18 +97,6 @@ public class GameStateService {
             GameState monitorStatus = stateService.getValue();
             updateLabel(monitorStatus);
             adjustPollingByState();
-            if (monitorStatus == GameState.EXECUTING) {
-
-                // test
-                if (memoryReadingService.getSkillPoints() > 0) {
-                    System.out.println("pressing E");
-                    keyInputService.pressKey(KeyboardKey.E);
-                } else {
-                    System.out.println("pressing Q");
-                    keyInputService.pressKey(KeyboardKey.Q);
-                }
-
-            }
         });
     }
 
@@ -137,7 +124,7 @@ public class GameStateService {
                 stateService.cancel();
             }
         });
-        memoryReadingService.cleanup();
+        combatMonitorService.getMemoryReadingService().cleanup();
     }
 
 }

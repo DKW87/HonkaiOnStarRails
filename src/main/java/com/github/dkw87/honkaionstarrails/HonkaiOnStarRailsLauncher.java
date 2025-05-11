@@ -10,8 +10,10 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class HonkaiOnStarRailsLauncher extends Application {
 
@@ -40,6 +42,7 @@ public class HonkaiOnStarRailsLauncher extends Application {
         stage.setTitle("Honkai: On Star Rails");
         stage.setScene(scene);
         stage.setAlwaysOnTop(true);
+        stage.getIcons().add(new Image(HonkaiOnStarRailsLauncher.class.getResourceAsStream("image/hosr_logo.png")));
         spawnWindowBottomRight(stage, scene);
     }
 
