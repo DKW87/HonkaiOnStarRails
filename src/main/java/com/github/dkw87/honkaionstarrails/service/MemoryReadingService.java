@@ -137,17 +137,11 @@ public class MemoryReadingService {
      * @return true if in combat based on memory values
      */
     public boolean isInCombat() {
-        if (processHandle == null || moduleBaseAddresses.isEmpty()) {
-            if (!initialize()) {
-                return false;
-            }
-        }
+        if (!isInitialized()) return false;
+
 
         Long gameModuleBase = moduleBaseAddresses.get(CombatOffsets.GAME_ASSEMBLY_MODULE);
-        if (gameModuleBase == null) {
-            System.out.println("Game module base address not found");
-            return false;
-        }
+        if (!gameModuleExists(gameModuleBase)) return false;
 
 
         // Read combat state indicators
@@ -163,17 +157,10 @@ public class MemoryReadingService {
      * @return number of skill points or -1 if reading failed
      */
     public int getSkillPoints() {
-        if (processHandle == null || moduleBaseAddresses.isEmpty()) {
-            if (!initialize()) {
-                return -1;
-            }
-        }
+        if (!isInitialized()) return -1;
 
         Long gameModuleBase = moduleBaseAddresses.get(CombatOffsets.GAME_ASSEMBLY_MODULE);
-        if (gameModuleBase == null) {
-            System.out.println("Game module base address not found");
-            return -1;
-        }
+        if (!gameModuleExists(gameModuleBase)) return -1;
 
         // Start with the base pointer
         long address = gameModuleBase + CombatOffsets.SKILLPOINTS_BASE;
@@ -264,6 +251,21 @@ public class MemoryReadingService {
         }
 
         return buffer.getLong(0);
+    }
+
+    private boolean isInitialized() {
+        if (processHandle == null || moduleBaseAddresses.isEmpty()) {
+            return initialize();
+        }
+        return true;
+    }
+
+    private boolean gameModuleExists(Long gameModuleBase) {
+        if (gameModuleBase == null) {
+            System.out.println("Game module base address not found");
+            return false;
+        }
+        return true;
     }
 
     /**
