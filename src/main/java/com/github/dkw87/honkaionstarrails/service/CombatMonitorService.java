@@ -27,33 +27,31 @@ public class CombatMonitorService {
         return isInCombat.get();
     }
 
-    public boolean isInCombat() {
+    public void isInCombat() {
         Long gameAssemblyModule = getModuleBaseAddress(CombatOffsets.GAME_ASSEMBLY_MODULE);
-        if (moduleNotFound(gameAssemblyModule)) return false;
+        if (moduleNotFound(gameAssemblyModule)) return;
 
         byte combatStart = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.COMBAT_START);
         byte combatReady = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.COMBAT_READY);
 
         isInCombat.set(combatStart > 0
                         && combatReady > 0);
-        return isInCombat.get();
     }
 
-    public boolean isCombatPaused() {
+    public void isCombatPaused() {
         Long gameAssemblyModule = getModuleBaseAddress(CombatOffsets.GAME_ASSEMBLY_MODULE);
-        if (moduleNotFound(gameAssemblyModule)) return false;
+        if (moduleNotFound(gameAssemblyModule)) return;
 
         byte combatPaused1 = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.COMBAT_PAUSED_1);
         byte combatPaused2 = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.COMBAT_PAUSED_2);
 
         isCombatPaused.set(combatPaused1 > 0
                             && combatPaused2 > 0);
-        return isCombatPaused.get();
     }
 
-    public boolean isCombatViewOpen() {
+    public void isCombatViewOpen() {
         Long gameAssemblyModule = getModuleBaseAddress(CombatOffsets.GAME_ASSEMBLY_MODULE);
-        if (moduleNotFound(gameAssemblyModule)) return false;
+        if (moduleNotFound(gameAssemblyModule)) return;
 
         byte combatViewActivated = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.COMBAT_VIEW_ACTIVATED);
         byte combatViewReady1 = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.COMBAT_VIEW_READY_1);
@@ -62,7 +60,6 @@ public class CombatMonitorService {
         isCombatViewOpen.set(combatViewActivated >0
                 && combatViewReady1 > 0
                 && combatViewReady2 > 0);
-        return isCombatViewOpen.get();
     }
 
     public MemoryReadingService getMemoryReadingService() {
