@@ -132,26 +132,6 @@ public class MemoryReadingService {
     }
 
     /**
-     * Checks if the game is in combat by reading memory values
-     *
-     * @return true if in combat based on memory values
-     */
-    public boolean isInCombat() {
-        if (!isInitialized()) return false;
-
-
-        Long gameModuleBase = moduleBaseAddresses.get(CombatOffsets.GAME_ASSEMBLY_MODULE);
-        if (!gameModuleExists(gameModuleBase)) return false;
-
-
-        // Read combat state indicators
-        byte combatStart = readByteFromAddress(gameModuleBase + CombatOffsets.COMBAT_START);
-        byte combatReady = readByteFromAddress(gameModuleBase + CombatOffsets.COMBAT_READY);
-
-        return combatStart > 0 || combatReady > 0;
-    }
-
-    /**
      * Gets the current skill points available in combat
      *
      * @return number of skill points or -1 if reading failed
@@ -189,7 +169,7 @@ public class MemoryReadingService {
     /**
      * Read a byte from the specified memory address
      */
-    private byte readByteFromAddress(long address) {
+    public byte readByteFromAddress(long address) {
         Memory buffer = new Memory(1);
         boolean success = Kernel32.INSTANCE.ReadProcessMemory(
                 processHandle,
@@ -212,7 +192,7 @@ public class MemoryReadingService {
     /**
      * Read an integer (4 bytes) from the specified memory address
      */
-    private int readIntFromAddress(long address) {
+    public int readIntFromAddress(long address) {
         Memory buffer = new Memory(4);
         boolean success = Kernel32.INSTANCE.ReadProcessMemory(
                 processHandle,
@@ -234,7 +214,7 @@ public class MemoryReadingService {
     /**
      * Read a long (8 bytes) from the specified memory address (for pointer values)
      */
-    private long readLongFromAddress(long address) {
+    public long readLongFromAddress(long address) {
         Memory buffer = new Memory(8);
         boolean success = Kernel32.INSTANCE.ReadProcessMemory(
                 processHandle,
@@ -253,14 +233,14 @@ public class MemoryReadingService {
         return buffer.getLong(0);
     }
 
-    private boolean isInitialized() {
+    public boolean isInitialized() {
         if (processHandle == null || moduleBaseAddresses.isEmpty()) {
             return initialize();
         }
         return true;
     }
 
-    private boolean gameModuleExists(Long gameModuleBase) {
+    public boolean gameModuleExists(Long gameModuleBase) {
         if (gameModuleBase == null) {
             System.out.println("Game module base address not found");
             return false;
@@ -278,4 +258,9 @@ public class MemoryReadingService {
             processHandle = null;
         }
     }
+    
+    public Long getModuleBaseAddresses(String module) {
+        return moduleBaseAddresses.get(module);
+    }
+    
 }
