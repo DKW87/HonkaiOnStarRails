@@ -1,24 +1,46 @@
-# Honkai On Star Rails (HOSR)
+# Honkai On Star Rails 
 
-## ⚠️ WARNING ⚠️
+## ⚠️ DISCLAIMER ⚠️
+**USE THIS SOFTWARE AT YOUR OWN RISK**. This application reads game memory and simulates key inputs, which may violate the Terms of Service of Honkai: Star Rail. Using this software could potentially result in your account being banned. I take NO RESPONSIBILITY for any consequences resulting from the use of this software.
 
-**USE THIS SOFTWARE AT YOUR OWN RISK**. This tool reads game memory and simulates key inputs, which may violate the Terms of Service of Honkai: Star Rail. Using this software could potentially result in your account being banned. The developer takes NO RESPONSIBILITY for any consequences resulting from the use of this software.
-
-![HOSR Logo](src/main/resources/com/github/dkw87/honkaionstarrails/image/hosr_logo.png)
+<p align="center">
+  <img src="src/main/resources/com/github/dkw87/honkaionstarrails/image/hosr_logo.png" alt="HOSR Logo">
+</p>
 
 ## Overview
 
-Honkai On Star Rails (HOSR) is a lightweight automation assistant for Honkai: Star Rail that monitors and detects combat states through memory reading. The application runs in the background with a minimal UI that displays the current state of the game and automation.
+Honkai On Star Rails is an automation assistant for Honkai: Star Rail that aims to provide a better automated combat experience. The goal is to have custom rules for each character for granular decision-making and no longer use abilities that don't make sense for the situation. This application is built using Java and JavaFX with JNA for memory access and JNativeHook for keyboard input simulation. Because of this, this application requires Administrator privileges to run properly. 
 
-### Features
 
-- Detects when the game is running and in focus
-- Monitors combat state through memory reading
-- Identifies when combat begins, pauses, or when the combat view is open
-- Runs with minimal system impact
-- Automatically adjusts polling rates based on game state for efficiency
-- Small overlay UI that stays in the bottom right corner
+### This application is currently able to
 
-This tool is built using Java and JavaFX with JNA for memory access and JNativeHook for keyboard input simulation. The project follows a service-oriented architecture with clean separation between game monitoring, memory reading, and input services.
+- detect when the game is running and in focus;
+- monitor combat state through reading the game's memory;
+- identify when combat begins, pauses, or when the real-time combat viewer is open;
+- automatically adjust polling rates based on game state for efficiency;
+- able to send keypresses.
 
-Currently, the combat automation execution service is under development, but the foundation for detecting all necessary game states is implemented.
+### Features to be implemented
+
+- the full GUI for the end-user;
+- modular combat rules service;
+- combat execution service;
+- set teams in GUI;
+- set rules on character or team level;
+- tbd.
+
+### Nice to haves
+
+- Damage meter.
+
+### How to help
+Searching for static addresses or reliable pointer chains to read data from is very time-consuming. I'd be happy with any being provided! Please refer [here](https://github.com/DKW87/HonkaiOnStarRails/blob/main/src/main/java/com/github/dkw87/honkaionstarrails/service/constant/CombatOffsets.java) for currently available addresses.    
+
+### Application requires
+- **administrator privileges** in order for it to work;
+- Windows OS;
+- the game [Honkai: Star Rail](https://hsr.hoyoverse.com/en-us/).
+
+### Compiling requires
+- [Java LTS 21](https://adoptium.net/temurin/releases/)
+- [JavaFX LTS 21](https://gluonhq.com/products/javafx/openjfx-21-release-notes/)
