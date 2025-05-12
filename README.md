@@ -31,7 +31,7 @@
 - create teams in GUI;
 - create combat rules on character or team level in GUI;
 - able to set different combat rules for different teams in GUI;
-- possible beta release ahead of release version 1.0
+- possible beta release ahead of release version 1.0.
 
 ### Future features which may or may not happen
 
