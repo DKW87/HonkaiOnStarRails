@@ -26,6 +26,7 @@
 - combat execution service;
 - data collection service;
 - full GUI for the end-user;
+- save user created data and configuration;
 - create teams in GUI;
 - create combat rules on character or team level in GUI;
 - able to set different combat rules for different teams in GUI;
