@@ -34,6 +34,7 @@
 
 ### Future features which may or may not happen
 
+- GUI translations;
 - damage meter;
 - export logs;
 - export user profile to cloud;
