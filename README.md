@@ -38,7 +38,7 @@
 - GUI translations;
 - damage meter;
 - export logs;
-- export user profile to cloud;
+- export user profile(s) to cloud;
 - TBD.
 
 ### How to help
