@@ -15,6 +15,9 @@ public class CombatOffsets {
     public static final long COMBAT_VIEW_READY_1 = 0x42659C0L;
     public static final long COMBAT_VIEW_READY_2 = 0x426C960L;
 
+    public static final long TURN_COUNTER = 0x426C670L;
+
+    // not stable
     public static final long SKILLPOINTS_BASE = 0x4272180L;
     public static final int[] SKILLPOINTS_PTR_CHAIN = {
             0x318,
