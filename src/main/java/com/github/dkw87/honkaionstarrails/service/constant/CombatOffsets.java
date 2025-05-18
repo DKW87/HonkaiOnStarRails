@@ -27,6 +27,7 @@ public class CombatOffsets {
             0x10C,
             0
     };
+    // might actually be more stable than original
     public static final long SKILLPOINTS_BACKUP_BASE = 0x4261C88L;
     public static final int[] SKILLPOINTS_BACKUP_CHAIN = {
             0x80,
