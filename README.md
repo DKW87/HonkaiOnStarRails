@@ -28,17 +28,17 @@
 - full GUI for the end-user;
 - save user created data and configuration;
 - GUI switching automatically between monitor and editor;
-- create teams in GUI;
+- create team(s) in GUI;
 - create combat rules on character or team level in GUI;
 - able to set different combat rules for different teams in GUI;
-- possible beta release ahead of release version 1.0
+- possible beta release ahead of release version 1.0.
 
 ### Future features which may or may not happen
 
 - GUI translations;
 - damage meter;
 - export logs;
-- export user profile to cloud;
+- export user profile(s) to cloud;
 - TBD.
 
 ### How to help
