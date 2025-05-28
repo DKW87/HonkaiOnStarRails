@@ -4,16 +4,22 @@ import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.ptr.IntByReference;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class GameMonitorService {
 
     public static volatile WinDef.HWND gameWindow = null;
+
+    public static final AtomicBoolean gameIsRunning = new AtomicBoolean(false);
+    public static final AtomicBoolean gameIsPaused = new AtomicBoolean(false);
 
     private static final String HSR_WINDOW_TITLE = "Honkai: Star Rail";
     private static final String HSR_WINDOW_CLASS = "UnityWndClass";
 
     public boolean isGameRunning() {
         gameWindow = User32.INSTANCE.FindWindow(HSR_WINDOW_CLASS, HSR_WINDOW_TITLE);
-        return gameWindow != null;
+        gameIsRunning.set(gameWindow != null);
+        return gameIsRunning.get();
     }
 
     public boolean isGameFocused() {
@@ -25,7 +31,9 @@ public class GameMonitorService {
         User32.INSTANCE.GetWindowThreadProcessId(gameWindow, gamePid);
         User32.INSTANCE.GetWindowThreadProcessId(focusWindow, focusPid);
 
-        return focusPid.getValue() == gamePid.getValue();
+        gameIsPaused.set(focusPid.getValue() == gamePid.getValue());
+
+        return gameIsPaused.get();
     }
 
 }
