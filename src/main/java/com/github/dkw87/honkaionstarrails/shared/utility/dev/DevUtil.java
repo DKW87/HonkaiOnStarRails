@@ -56,7 +56,7 @@ public class DevUtil {
         return scanModules(memoryService, hexSignature, scanSize, COMMON_MODULES);
     }
 
-    // Core scanning logic - no more duplication
+    // Core scanning logic
     private static List<SignatureResult> scanModules(MemoryReadingService memoryService,
                                                      String hexSignature,
                                                      int scanSize,
