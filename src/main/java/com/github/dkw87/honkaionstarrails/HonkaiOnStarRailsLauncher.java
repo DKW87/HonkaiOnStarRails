@@ -25,17 +25,6 @@ public class HonkaiOnStarRailsLauncher extends Application {
         initializeStage(stage);
         registerCleanupService();
         stage.show();
-        showDevView();
-    }
-
-    private void showDevView() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("view/DevView.fxml"));
-        Parent root = loader.load();
-
-        Stage devWindow = new Stage();
-        devWindow.setTitle("Dev Tools");
-        devWindow.setScene(new Scene(root));
-        devWindow.show();
     }
 
     @Override
