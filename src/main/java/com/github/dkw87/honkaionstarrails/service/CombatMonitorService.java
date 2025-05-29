@@ -14,10 +14,10 @@ public class CombatMonitorService {
 
     public CombatMonitorService() {
         this.memoryReadingService = new MemoryReadingService();
-        memoryReadingService.initialize();
     }
 
     public boolean runMonitor() {
+        memoryReadingService.initialize();
         isInCombat();
         if (isInCombat.get()) {
             isCombatPaused();
