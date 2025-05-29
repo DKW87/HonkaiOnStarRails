@@ -19,21 +19,21 @@
          <children>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Scan hex signature" />
             <TextField fx:id="scanHexTextField" />
-            <Button fx:id="scanHexButton" mnemonicParsing="false" onAction="#scanHexSig" text="Button" />
+            <Button fx:id="scanHexButton" mnemonicParsing="false" onAction="#scanHexSig" text="Scan" />
          </children>
       </VBox>
       <VBox prefHeight="200.0" prefWidth="100.0">
          <children>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Scan text signature" />
             <TextField fx:id="scanTextTextField" />
-            <Button fx:id="scanTextButton" mnemonicParsing="false" onAction="#scanTextSig" text="Button" />
+            <Button fx:id="scanTextButton" mnemonicParsing="false" onAction="#scanTextSig" text="Scan" />
          </children>
       </VBox>
       <VBox prefHeight="200.0" prefWidth="100.0">
          <children>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Bytes to hex converter" />
             <TextField fx:id="bytesToHexTextField" />
-            <Button fx:id="bytesToHexButton" mnemonicParsing="false" onAction="#convertBytesToHex" text="Button" />
+            <Button fx:id="bytesToHexButton" mnemonicParsing="false" onAction="#convertBytesToHex" text="Convert" />
          </children>
       </VBox>
    </children>
