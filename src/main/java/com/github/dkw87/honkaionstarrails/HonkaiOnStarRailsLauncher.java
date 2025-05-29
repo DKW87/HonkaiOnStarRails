@@ -22,13 +22,13 @@ public class HonkaiOnStarRailsLauncher extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         initializeStage(stage);
-        registerCleanupService();
+//        registerCleanupService();
         stage.show();
     }
 
     @Override
     public void stop() {
-        cleanupService.unregister();
+//        cleanupService.unregister();
     }
 
     public static void main(String[] args) {
@@ -36,13 +36,13 @@ public class HonkaiOnStarRailsLauncher extends Application {
     }
 
     private void initializeStage(Stage stage) throws IOException {
-        this.fxmlLoader = new FXMLLoader(HonkaiOnStarRailsLauncher.class.getResource("view/MonitorView.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 300, 25);
+        this.fxmlLoader = new FXMLLoader(HonkaiOnStarRailsLauncher.class.getResource("view/DevView.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 800, 600);
         stage.setTitle("Honkai: On Star Rails");
         stage.setScene(scene);
         stage.setAlwaysOnTop(true);
         stage.getIcons().add(new Image(HonkaiOnStarRailsLauncher.class.getResourceAsStream("image/hosr_logo.png")));
-        spawnWindowBottomRight(stage, scene);
+//        spawnWindowBottomRight(stage, scene);
     }
 
     private void spawnWindowBottomRight(Stage stage, Scene scene) {
