@@ -224,7 +224,7 @@ public class DevUtil {
         }
     }
 
-    private static String textToHexString(String text) {
+    public static String textToHexString(String text) {
         StringBuilder hexString = new StringBuilder();
         byte[] textBytes = text.getBytes();
 
