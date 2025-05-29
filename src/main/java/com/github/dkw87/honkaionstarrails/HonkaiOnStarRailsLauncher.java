@@ -11,16 +11,21 @@ import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 public class HonkaiOnStarRailsLauncher extends Application {
+
+    private static final Logger log = LoggerFactory.getLogger(HonkaiOnStarRailsLauncher.class);
 
     private FXMLLoader fxmlLoader;
     private CleanupService cleanupService;
 
     @Override
     public void start(Stage stage) throws IOException {
+        log.info("Starting Honkai On Star Rails...");
         initializeStage(stage);
         registerCleanupService();
         stage.show();
@@ -36,6 +41,7 @@ public class HonkaiOnStarRailsLauncher extends Application {
     }
 
     private void initializeStage(Stage stage) throws IOException {
+        log.info("Initializing Honkai On Star Rails stage...");
         this.fxmlLoader = new FXMLLoader(HonkaiOnStarRailsLauncher.class.getResource("view/MonitorView.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 300, 25);
         stage.setTitle("Honkai: On Star Rails");
@@ -54,6 +60,7 @@ public class HonkaiOnStarRailsLauncher extends Application {
     }
 
     private void registerCleanupService() {
+        log.info("Registering CleanupService...");
         MonitoringController controller = fxmlLoader.getController();
         GameStateService gameStateService = controller.getGameStateService();
         KeyInputService keyInputService = gameStateService.getKeyInputService();
