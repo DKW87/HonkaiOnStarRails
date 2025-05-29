@@ -233,28 +233,6 @@ public class MemoryReadingService {
         return buffer.getLong(0);
     }
 
-    public byte[] readMemoryChunk(long address, int size) {
-        if (!isInitialized()) {
-            return null;
-        }
-
-        Memory buffer = new Memory(size);
-        boolean success = Kernel32.INSTANCE.ReadProcessMemory(
-                processHandle,
-                new Pointer(address),
-                buffer,
-                size,
-                null
-        );
-
-        if (!success) {
-            // Don't spam console during scanning
-            return null;
-        }
-
-        return buffer.getByteArray(0, size);
-    }
-
     public boolean isInitialized() {
         if (processHandle == null || moduleBaseAddresses.isEmpty()) {
             return initialize();
