@@ -9,49 +9,58 @@ import java.util.List;
 
 public class DevUtil {
 
-    public static List<SignatureResult> scanForSignature(MemoryReadingService memoryService,
-                                                         String hexSignature,
-                                                         int scanSize) {
-        return scanAllModules(memoryService, hexSignature, scanSize);
+    private static final int DEFAULT_SCAN_SIZE = 100 * 1024 * 1024; // 100MB
+    private static final String[] COMMON_MODULES = {
+            "GameAssembly.dll",
+            "UnityPlayer.dll",
+            "User32.dll",
+            "ntdll.dll",
+            "kernel32.dll"
+    };
+
+    // Main scanning methods
+    public static List<SignatureResult> scanForSignature(String hexSignature) {
+        MemoryReadingService memoryService = new MemoryReadingService();
+        if (!memoryService.initialize()) {
+            return new ArrayList<>();
+        }
+
+        List<SignatureResult> results = scanForSignature(memoryService, hexSignature);
+        memoryService.cleanup();
+        return results;
     }
 
-    public static List<SignatureResult> scanForSignature(MemoryReadingService memoryService,
-                                                         String hexSignature) {
-        return scanAllModules(memoryService, hexSignature, 100 * 1024 * 1024);
+    public static List<SignatureResult> scanForSignature(MemoryReadingService memoryService, String hexSignature) {
+        return scanAllModules(memoryService, hexSignature, DEFAULT_SCAN_SIZE);
+    }
+
+    public static List<SignatureResult> scanForText(String textSignature) {
+        return scanForSignature(textToHexString(textSignature));
+    }
+
+    public static List<SignatureResult> scanForText(MemoryReadingService memoryService, String textSignature) {
+        String hexSignature = textToHexString(textSignature);
+        System.out.println("Converted text '" + textSignature + "' to hex: " + hexSignature);
+        return scanForSignature(memoryService, hexSignature);
     }
 
     public static List<SignatureResult> scanSpecificModule(MemoryReadingService memoryService,
                                                            String hexSignature,
-                                                           String moduleName,
-                                                           int scanSize) {
-        List<SignatureResult> results = new ArrayList<>();
-
-        if (!memoryService.isInitialized()) {
-            System.out.println("Memory service not initialized");
-            return results;
-        }
-
-        byte[] signatureBytes = hexStringToBytes(hexSignature);
-        if (signatureBytes == null) {
-            System.out.println("Invalid hex signature format");
-            return results;
-        }
-
-        Long moduleBase = memoryService.getModuleBaseAddresses(moduleName);
-        if (moduleBase == null) {
-            System.out.println("Could not find module: " + moduleName);
-            return results;
-        }
-
-        System.out.println("Scanning module: " + moduleName + " (0x" + Long.toHexString(moduleBase) + ")");
-        results.addAll(scanModuleMemory(memoryService, moduleBase, moduleName, signatureBytes, scanSize));
-
-        return results;
+                                                           String moduleName) {
+        return scanModules(memoryService, hexSignature, DEFAULT_SCAN_SIZE, new String[]{moduleName});
     }
 
     public static List<SignatureResult> scanAllModules(MemoryReadingService memoryService,
                                                        String hexSignature,
                                                        int scanSize) {
+        return scanModules(memoryService, hexSignature, scanSize, COMMON_MODULES);
+    }
+
+    // Core scanning logic
+    private static List<SignatureResult> scanModules(MemoryReadingService memoryService,
+                                                     String hexSignature,
+                                                     int scanSize,
+                                                     String[] moduleNames) {
         List<SignatureResult> results = new ArrayList<>();
 
         if (!memoryService.isInitialized()) {
@@ -65,17 +74,9 @@ public class DevUtil {
             return results;
         }
 
-        String[] commonModules = {
-                "GameAssembly.dll",
-                "UnityPlayer.dll",
-                "User32.dll",
-                "ntdll.dll",
-                "kernel32.dll"
-        };
-
         System.out.println("High-performance signature scan (16MB chunks)...");
 
-        for (String moduleName : commonModules) {
+        for (String moduleName : moduleNames) {
             Long moduleBase = memoryService.getModuleBaseAddresses(moduleName);
             if (moduleBase != null) {
                 System.out.println("Scanning: " + moduleName);
@@ -83,7 +84,7 @@ public class DevUtil {
             }
         }
 
-        System.out.println("Total scan complete. Found " + results.size() + " matches across all modules.");
+        System.out.println("Total scan complete. Found " + results.size() + " matches.");
         return results;
     }
 
@@ -93,7 +94,7 @@ public class DevUtil {
                                                           byte[] signatureBytes,
                                                           int scanSize) {
         List<SignatureResult> results = new ArrayList<>();
-        int chunkSize = 16 * 1024 * 1024; // 16MB chunks - optimal for high-end system
+        int chunkSize = 16 * 1024 * 1024; // 16MB chunks
         int contextSize = 50; // bytes before and after to capture
 
         for (long offset = 0; offset < scanSize; offset += chunkSize) {
@@ -126,9 +127,10 @@ public class DevUtil {
         return results;
     }
 
+    // Context reading methods
     private static String readContextBefore(MemoryReadingService memoryService, long address, int size) {
         StringBuilder result = new StringBuilder();
-        long startAddress = Math.max(0, address - size); // Don't go below 0
+        long startAddress = Math.max(0, address - size);
 
         for (long addr = startAddress; addr < address; addr++) {
             try {
@@ -185,26 +187,28 @@ public class DevUtil {
         return result.toString();
     }
 
-    public static List<SignatureResult> scanForText(MemoryReadingService memoryService,
-                                                    String textSignature,
-                                                    int scanSize) {
-        String hexSignature = textToHexString(textSignature);
-        System.out.println("Converted text '" + textSignature + "' to hex: " + hexSignature);
-        return scanAllModules(memoryService, hexSignature, scanSize);
+    private static String readAsString(MemoryReadingService memoryService, long address, int maxLength) {
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < maxLength; i++) {
+            try {
+                byte b = memoryService.readByteFromAddress(address + i);
+                if (b == 0) break; // Null terminator
+
+                if (b >= 32 && b <= 126) {
+                    result.append((char) b);
+                } else {
+                    result.append('.');
+                }
+            } catch (Exception e) {
+                break;
+            }
+        }
+
+        return result.toString();
     }
 
-    public static List<SignatureResult> scanForText(MemoryReadingService memoryService,
-                                                    String textSignature) {
-        return scanForText(memoryService, textSignature, 100 * 1024 * 1024);
-    }
-
-    public static List<SignatureResult> scanForTextInModule(MemoryReadingService memoryService,
-                                                            String textSignature,
-                                                            String moduleName) {
-        String hexSignature = textToHexString(textSignature);
-        return scanSpecificModule(memoryService, hexSignature, moduleName, 100 * 1024 * 1024);
-    }
-
+    // Utility methods
     private static byte[] hexStringToBytes(String hexString) {
         try {
             String[] hexBytes = hexString.trim().split("\\s+");
@@ -220,7 +224,7 @@ public class DevUtil {
         }
     }
 
-    private static String textToHexString(String text) {
+    public static String textToHexString(String text) {
         StringBuilder hexString = new StringBuilder();
         byte[] textBytes = text.getBytes();
 
@@ -262,87 +266,7 @@ public class DevUtil {
         return true;
     }
 
-    private static String readAsString(MemoryReadingService memoryService, long address, int maxLength) {
-        StringBuilder result = new StringBuilder();
-
-        for (int i = 0; i < maxLength; i++) {
-            try {
-                byte b = memoryService.readByteFromAddress(address + i);
-                if (b == 0) break; // Null terminator
-
-                // Only add printable ASCII characters
-                if (b >= 32 && b <= 126) {
-                    result.append((char) b);
-                } else {
-                    result.append('.');
-                }
-            } catch (Exception e) {
-                break;
-            }
-        }
-
-        return result.toString();
-    }
-
-    public static void listAvailableModules(MemoryReadingService memoryService) {
-        String[] commonModules = {
-                "GameAssembly.dll",
-                "UnityPlayer.dll",
-                "User32.dll",
-                "ntdll.dll",
-                "kernel32.dll",
-                "msvcrt.dll",
-                "d3d11.dll",
-                "xinput1_3.dll"
-        };
-
-        System.out.println("Available modules:");
-        for (String moduleName : commonModules) {
-            Long moduleBase = memoryService.getModuleBaseAddresses(moduleName);
-            if (moduleBase != null) {
-                System.out.println("✓ " + moduleName + " (0x" + Long.toHexString(moduleBase) + ")");
-            } else {
-                System.out.println("✗ " + moduleName + " (not found)");
-            }
-        }
-    }
-
-    public static void exampleUsage() {
-        MemoryReadingService memoryService = new MemoryReadingService();
-
-        if (memoryService.initialize()) {
-            listAvailableModules(memoryService);
-            System.out.println();
-
-            // Scan for signature with full context analysis
-            long startTime = System.currentTimeMillis();
-            List<SignatureResult> results = scanForText(memoryService, "user_info\":{\"uid\":\"");
-            long endTime = System.currentTimeMillis();
-
-            System.out.println("Found " + results.size() + " matches in " + (endTime - startTime) + "ms");
-
-            // Analyze results to find patterns and suggest better signatures
-            analyzeResults(results);
-
-            // Example: scan for username and see context
-            System.out.println("\n=== USERNAME SCAN ===");
-            List<SignatureResult> nameResults = scanForText(memoryService, "Longdikjohnson");
-            for (SignatureResult result : nameResults) {
-                System.out.println("Username context:");
-                System.out.println("Before: '" + result.beforeContext + "'");
-                System.out.println("After:  '" + result.afterContext + "'");
-                System.out.println("Full context: '" + result.getFullContext() + "'");
-                System.out.println();
-            }
-
-            memoryService.cleanup();
-        }
-    }
-
-    public static String textToHex(String text) {
-        return textToHexString(text);
-    }
-
+    // Analysis methods
     public static void analyzeResults(List<SignatureResult> results) {
         System.out.println("\n=== SIGNATURE ANALYSIS ===");
         System.out.println("Found " + results.size() + " matches");
@@ -359,11 +283,10 @@ public class DevUtil {
 
             if (longerSignature.length() > result.readableText.length()) {
                 System.out.println("Suggested longer signature: '" + longerSignature + "'");
-                System.out.println("As hex: " + textToHex(longerSignature));
+                System.out.println("As hex: " + textToHexString(longerSignature));
             }
         }
 
-        // Look for common patterns
         if (results.size() > 1) {
             System.out.println("\n=== PATTERN ANALYSIS ===");
             analyzeCommonPatterns(results);
@@ -373,35 +296,30 @@ public class DevUtil {
     private static void analyzeCommonPatterns(List<SignatureResult> results) {
         System.out.println("Looking for common before/after patterns...");
 
-        // Check for common prefixes in before context
         String[] beforeContexts = new String[results.size()];
+        String[] afterContexts = new String[results.size()];
+
         for (int i = 0; i < results.size(); i++) {
             beforeContexts[i] = results.get(i).beforeContext;
+            afterContexts[i] = results.get(i).afterContext;
         }
+
         String commonBefore = findCommonSuffix(beforeContexts);
+        String commonAfter = findCommonPrefix(afterContexts);
 
         if (commonBefore.length() > 5) {
             System.out.println("Common prefix pattern: '" + commonBefore + "'");
         }
 
-        // Check for common suffixes in after context
-        String[] afterContexts = new String[results.size()];
-        for (int i = 0; i < results.size(); i++) {
-            afterContexts[i] = results.get(i).afterContext;
-        }
-        String commonAfter = findCommonPrefix(afterContexts);
-
         if (commonAfter.length() > 5) {
             System.out.println("Common suffix pattern: '" + commonAfter + "'");
         }
 
-        // Identify which result might be the "real" one
         System.out.println("\nWhich match is likely the real player data:");
         for (int i = 0; i < results.size(); i++) {
             SignatureResult result = results.get(i);
             int score = 0;
 
-            // Score based on context clues
             if (result.beforeContext.contains("player") || result.afterContext.contains("player")) score += 2;
             if (result.beforeContext.contains("data") || result.afterContext.contains("data")) score += 1;
             if (result.moduleName.equals("GameAssembly.dll")) score += 1;
@@ -465,6 +383,34 @@ public class DevUtil {
         return commonLength > 0 ? first.substring(0, commonLength) : "";
     }
 
+    // Convenience methods
+    public static void listAvailableModules(MemoryReadingService memoryService) {
+        String[] allModules = {
+                "GameAssembly.dll",
+                "UnityPlayer.dll",
+                "User32.dll",
+                "ntdll.dll",
+                "kernel32.dll",
+                "msvcrt.dll",
+                "d3d11.dll",
+                "xinput1_3.dll"
+        };
+
+        System.out.println("Available modules:");
+        for (String moduleName : allModules) {
+            Long moduleBase = memoryService.getModuleBaseAddresses(moduleName);
+            if (moduleBase != null) {
+                System.out.println("✓ " + moduleName + " (0x" + Long.toHexString(moduleBase) + ")");
+            } else {
+                System.out.println("✗ " + moduleName + " (not found)");
+            }
+        }
+    }
+
+    public static String textToHex(String text) {
+        return textToHexString(text);
+    }
+
     public static void testTextToHex() {
         String[] testStrings = {
                 "user_info\":{\"uid\":\"",
@@ -486,4 +432,18 @@ public class DevUtil {
         System.out.println("Mouse is at: X=" + mousePosition.x + ", Y=" + mousePosition.y);
     }
 
+    // Simple usage examples
+    public static void exampleUsage() {
+        // Super simple - automatically handles memory service
+        List<SignatureResult> results = scanForText("user_info\":{\"uid\":\"");
+        analyzeResults(results);
+
+        // Or with more control
+        MemoryReadingService memoryService = new MemoryReadingService();
+        if (memoryService.initialize()) {
+            List<SignatureResult> nameResults = scanForText(memoryService, "Longdikjohnson");
+            System.out.println("Found username in " + nameResults.size() + " locations");
+            memoryService.cleanup();
+        }
+    }
 }
