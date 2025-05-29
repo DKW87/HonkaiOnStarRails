@@ -6,29 +6,46 @@
 
     <groupId>com.github.dkw87</groupId>
     <artifactId>HonkaiOnStarRails</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
     <name>HonkaiOnStarRails</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <junit.version>5.10.0</junit.version>
+        <!-- Automated testing -->
+        <junit.version>5.12.2</junit.version>
+
+        <!-- JavaFX -->
+        <javafx-controls.version>21.0.7</javafx-controls.version>
+        <javafx-fxml.version>21.0.7</javafx-fxml.version>
+        <controlsfx.version>11.2.2</controlsfx.version>
+
+        <!-- Windows API -->
+        <jna.version>5.17.0</jna.version>
+        <jna-platform.version>5.17.0</jna-platform.version>
+
+        <!-- virtual keyboard presses -->
+        <jnativehook.version>2.2.2</jnativehook.version>
+
+        <!-- logging  -->
+        <slf4j-api.version>2.0.17</slf4j-api.version>
+        <log4j-slf4j-impl.version>2.24.3</log4j-slf4j-impl.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>21</version>
+            <version>${javafx-controls.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>21</version>
+            <version>${javafx-fxml.version}</version>
         </dependency>
         <dependency>
             <groupId>org.controlsfx</groupId>
             <artifactId>controlsfx</artifactId>
-            <version>11.1.2</version>
+            <version>${controlsfx.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -45,17 +62,27 @@
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
-            <version>5.17.0</version>
+            <version>${jna.version}</version>
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna-platform</artifactId>
-            <version>5.17.0</version>
+            <version>${jna-platform.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.kwhat</groupId>
             <artifactId>jnativehook</artifactId>
-            <version>2.2.2</version>
+            <version>${jnativehook.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
+            <version>${log4j-slf4j-impl.version}</version>
         </dependency>
     </dependencies>
 
