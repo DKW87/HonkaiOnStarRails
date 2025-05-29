@@ -33,5 +33,7 @@ public class DevController {
 
     @FXML
     public void convertBytesToHex() {
+        String string = DevUtil.textToHexString(bytesToHexTextField.getText());
+        System.out.printf("Text to Hex: %s\n", string);
     }
 }
