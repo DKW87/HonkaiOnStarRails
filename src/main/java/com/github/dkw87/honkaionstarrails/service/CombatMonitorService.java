@@ -16,6 +16,10 @@ public class CombatMonitorService {
 
     private final MemoryReadingService memoryReadingService;
 
+    private boolean lastInCombat;
+    private boolean lastCombatPaused;
+    private boolean lastCombatViewOpen;
+
     public CombatMonitorService() {
         LOGGER.info("Initializing CombatMonitorService...");
         this.memoryReadingService = new MemoryReadingService();
@@ -23,12 +27,24 @@ public class CombatMonitorService {
 
     public boolean runMonitor() {
         isInCombat();
+        logCombatState();
         if (isInCombat.get()) {
             isCombatPaused();
             isCombatViewOpen();
         }
-        LOGGER.debug("inCombat: {}, paused: {}, combatView: {}", isInCombat.get(), isCombatPaused.get(), isCombatViewOpen.get());
         return isInCombat.get();
+    }
+
+    private void logCombatState() {
+        if (isInCombat.get() != lastInCombat ||
+            isCombatPaused.get() != lastCombatPaused ||
+            isCombatViewOpen.get() != lastCombatViewOpen) {
+            LOGGER.info("CombatState info: isInCombat - {}, isCombatPaused - {}, isCombatViewOpen - {}",
+                    isInCombat.get(), isCombatPaused.get(), isCombatViewOpen.get());
+            lastInCombat = isInCombat.get();
+            lastCombatPaused = isCombatPaused.get();
+            lastCombatViewOpen = isCombatViewOpen.get();
+        }
     }
 
     public void isInCombat() {
