@@ -3,28 +3,32 @@ package com.github.dkw87.honkaionstarrails.service;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KeyInputService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(KeyInputService.class);
+
     public void initialize() {
+        LOGGER.info("Initializing KeyInputService...");
         try {
             // disable JNativeHook lib logging
-            Logger.getLogger(GlobalScreen.class.getPackage().getName()).setLevel(Level.OFF);
+            java.util.logging.Logger.getLogger(GlobalScreen.class.getPackage().getName())
+                    .setLevel(java.util.logging.Level.OFF);
 
             GlobalScreen.registerNativeHook();
-            System.out.println("JNativeHook initialized successfully");
         } catch (NativeHookException e) {
-            System.err.println("Error initializing JNativeHook: " + e.getMessage());
+            LOGGER.error("KeyInputService failed to initialize", e);
         }
     }
 
     public void unregister() {
+        LOGGER.info("Unregistering KeyInputService...");
         try {
             GlobalScreen.unregisterNativeHook();
         } catch (NativeHookException e) {
-            System.err.println("Error unregistering JNativeHook: " + e.getMessage());
+            LOGGER.error("KeyInputService failed to unregister", e);
         }
     }
 
@@ -51,7 +55,7 @@ public class KeyInputService {
             GlobalScreen.postNativeEvent(releaseEvent);
 
         } catch (Exception e) {
-            System.err.println("Error posting key event: " + e.getMessage());
+            LOGGER.error("KeyInputService failed to post key event: {}", keyCode, e);
         }
     }
 

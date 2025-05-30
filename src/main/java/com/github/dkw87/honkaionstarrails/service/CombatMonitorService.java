@@ -1,6 +1,8 @@
 package com.github.dkw87.honkaionstarrails.service;
 
 import com.github.dkw87.honkaionstarrails.service.constant.CombatOffsets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -10,9 +12,12 @@ public class CombatMonitorService {
     public static final AtomicBoolean isCombatPaused = new AtomicBoolean(false);
     public static final AtomicBoolean isCombatViewOpen = new AtomicBoolean(false);
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CombatMonitorService.class);
+
     private final MemoryReadingService memoryReadingService;
 
     public CombatMonitorService() {
+        LOGGER.info("Initializing CombatMonitorService...");
         this.memoryReadingService = new MemoryReadingService();
     }
 
@@ -23,7 +28,7 @@ public class CombatMonitorService {
             isCombatPaused();
             isCombatViewOpen();
         }
-        System.out.printf("inCombat: %s, paused: %s, combatView: %s\n", isInCombat.get(), isCombatPaused.get(), isCombatViewOpen.get());
+        LOGGER.debug("inCombat: {}, paused: {}, combatView: {}", isInCombat.get(), isCombatPaused.get(), isCombatViewOpen.get());
         return isInCombat.get();
     }
 
@@ -75,7 +80,7 @@ public class CombatMonitorService {
 
     private boolean moduleNotFound(Long module) {
         boolean notFound = (module == -1L);
-        if (notFound) System.out.println("Module base address was not found");
+        if (notFound) LOGGER.warn("Module base address was not found");
         return notFound;
     }
 

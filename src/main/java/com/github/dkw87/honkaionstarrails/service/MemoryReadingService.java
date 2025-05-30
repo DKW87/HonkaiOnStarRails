@@ -11,11 +11,15 @@ import com.sun.jna.platform.win32.Psapi;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.ptr.IntByReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MemoryReadingService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MemoryReadingService.class);
 
     private WinNT.HANDLE processHandle;
     private int processId;
@@ -25,14 +29,10 @@ public class MemoryReadingService {
         // Process handle will be initialized when game is detected
     }
 
-    /**
-     * Initialize memory reading by opening a handle to the game process
-     *
-     * @return true if successfully attached to the game process
-     */
     public boolean initialize() {
+        LOGGER.debug("Initializing MemoryReadingService...");
         if (GameMonitorService.gameWindow == null) {
-            System.out.println("Game window not found");
+            LOGGER.warn("Game window not found");
             return false;
         }
 
@@ -41,7 +41,7 @@ public class MemoryReadingService {
         processId = pid.getValue();
 
         if (processId <= 0) {
-            System.out.println("Failed to get process ID");
+            LOGGER.error("Failed to get process ID");
             return false;
         }
 
@@ -53,26 +53,23 @@ public class MemoryReadingService {
         );
 
         if (processHandle == null) {
-            System.out.println("Failed to open process handle: " + Native.getLastError());
+            LOGGER.error("Failed to open process handle: {}", Native.getLastError());
             return false;
         }
 
         // Get module base addresses
         if (!findModuleBaseAddress()) {
-            System.out.println("Failed to find game module base address");
+            LOGGER.error("Failed to find module base address");
             cleanup();
             return false;
         }
 
-        System.out.println("Successfully attached to game process with ID: " + processId);
-        System.out.println("GameAssembly.dll base address: 0x" +
+        LOGGER.debug("Successfully attached to game process with ID: {}", processId);
+        LOGGER.debug("GameAssembly.dll base address: 0x{}",
                 Long.toHexString(moduleBaseAddresses.get(CombatOffsets.GAME_ASSEMBLY_MODULE)));
         return true;
     }
 
-    /**
-     * Finds and stores the base addresses of key modules
-     */
     private boolean findModuleBaseAddress() {
         // Enumerate modules
         WinDef.HMODULE[] hModules = new WinDef.HMODULE[1024];
@@ -86,12 +83,12 @@ public class MemoryReadingService {
         );
 
         if (!enumSuccess) {
-            System.out.println("Failed to enumerate modules: " + Native.getLastError());
+            LOGGER.error("Failed to enumerate modules: {}", Native.getLastError());
             return false;
         }
 
         int modulesCount = lpcbNeeded.getValue() / Native.getNativeSize(WinDef.HMODULE.class);
-        System.out.println("Found " + modulesCount + " modules");
+        LOGGER.debug("Found {} modules", modulesCount);
 
         // Just find the largest module (GameAssembly.dll)
         long largestModuleSize = 0;
@@ -119,23 +116,17 @@ public class MemoryReadingService {
         }
 
         if (largestModuleAddress != 0) {
-            System.out.println("Found largest module (GameAssembly.dll) at 0x" +
-                    Long.toHexString(largestModuleAddress) +
-                    " size: " + (largestModuleSize / (1024 * 1024)) + " MB");
+            LOGGER.debug("Found largest module (GameAssembly.dll) at 0x{} size: {}MB",
+                    Long.toHexString(largestModuleAddress), (largestModuleSize / (1024 * 1024)));
 
             moduleBaseAddresses.put(CombatOffsets.GAME_ASSEMBLY_MODULE, largestModuleAddress);
             return true;
         }
 
-        System.out.println("Failed to find any modules with size information");
+        LOGGER.error("Failed to find any modules with size information");
         return false;
     }
 
-    /**
-     * Gets the current skill points available in combat
-     *
-     * @return number of skill points or -1 if reading failed
-     */
     public int getSkillPoints() {
         if (!isInitialized()) return -1;
 
@@ -166,9 +157,6 @@ public class MemoryReadingService {
         return -1;
     }
 
-    /**
-     * Read a byte from the specified memory address
-     */
     public byte readByteFromAddress(long address) {
         Memory buffer = new Memory(1);
         boolean success = Kernel32.INSTANCE.ReadProcessMemory(
@@ -180,18 +168,14 @@ public class MemoryReadingService {
         );
 
         if (!success) {
-            int error = Native.getLastError();
-            System.out.println("Failed to read byte from address: 0x" + Long.toHexString(address) +
-                    " Error: " + error);
+            LOGGER.error("Failed to read byte from address: 0x{} Error: {}",
+                    Long.toHexString(address), Native.getLastError());
             throw new RuntimeException("Read failed");
         }
 
         return buffer.getByte(0);
     }
 
-    /**
-     * Read an integer (4 bytes) from the specified memory address
-     */
     public int readIntFromAddress(long address) {
         Memory buffer = new Memory(4);
         boolean success = Kernel32.INSTANCE.ReadProcessMemory(
@@ -203,17 +187,14 @@ public class MemoryReadingService {
         );
 
         if (!success) {
-            System.out.println("Failed to read int from address: 0x" + Long.toHexString(address) +
-                    " Error: " + Native.getLastError());
+            LOGGER.error("Failed to read int from address: 0x{} Error: {}",
+                    Long.toHexString(address), Native.getLastError());
             return -1;
         }
 
         return buffer.getInt(0);
     }
 
-    /**
-     * Read a long (8 bytes) from the specified memory address (for pointer values)
-     */
     public long readLongFromAddress(long address) {
         Memory buffer = new Memory(8);
         boolean success = Kernel32.INSTANCE.ReadProcessMemory(
@@ -225,8 +206,8 @@ public class MemoryReadingService {
         );
 
         if (!success) {
-            System.out.println("Failed to read pointer from address: 0x" + Long.toHexString(address) +
-                    " Error: " + Native.getLastError());
+            LOGGER.error("Failed to read pointer from address: 0x{} Error: {}",
+                    Long.toHexString(address), Native.getLastError());
             return 0;
         }
 
@@ -242,18 +223,15 @@ public class MemoryReadingService {
 
     public boolean gameModuleExists(Long gameModuleBase) {
         if (gameModuleBase == null) {
-            System.out.println("Game module base address not found");
+            LOGGER.error("Game module base address not found");
             return false;
         }
         return true;
     }
 
-    /**
-     * Clean up resources
-     */
     public void cleanup() {
         if (processHandle != null) {
-            System.out.println("Cleaning up process handle: " + processHandle);
+            LOGGER.debug("Cleaning up process handle: {}", processHandle);
             Kernel32.INSTANCE.CloseHandle(processHandle);
             processHandle = null;
         }

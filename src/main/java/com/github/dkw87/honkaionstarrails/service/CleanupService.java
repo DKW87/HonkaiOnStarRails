@@ -1,21 +1,24 @@
 package com.github.dkw87.honkaionstarrails.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class CleanupService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CleanupService.class);
 
     private final GameStateService gameStateService;
     private final KeyInputService keyInputService;
 
     public CleanupService(GameStateService gameStateService, KeyInputService keyInputService) {
+        LOGGER.info("Registering CleanupService...");
         this.gameStateService = gameStateService;
         this.keyInputService = keyInputService;
         addShutdownHookToJVM();
     }
 
     public void unregister() {
-        System.out.println("Cleaning up KeyInputService");
         keyInputService.unregister();
-
-        System.out.println("Cleaning up GameStateService");
         gameStateService.stop();
     }
 
@@ -25,7 +28,7 @@ public class CleanupService {
             try {
                 unregister();
             } catch (Exception e) {
-                System.err.println("Failed to unregister due to: " + e.getMessage());
+                LOGGER.error("Shutdown hook failed to clean up", e);
             }
         }));
     }
