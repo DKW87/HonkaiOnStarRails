@@ -22,7 +22,7 @@ public class CombatMonitorService {
     }
 
     public boolean runMonitor() {
-        memoryReadingService.initialize();
+//        memoryReadingService.initialize();
         isInCombat();
         if (isInCombat.get()) {
             isCombatPaused();
