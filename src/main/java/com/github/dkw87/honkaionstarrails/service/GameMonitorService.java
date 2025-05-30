@@ -22,7 +22,7 @@ public class GameMonitorService {
     public boolean isGameRunning() {
         gameWindow = User32.INSTANCE.FindWindow(HSR_WINDOW_CLASS, HSR_WINDOW_TITLE);
         gameIsRunning.set(gameWindow != null);
-        LOGGER.debug("Game found: {}", gameIsRunning.get());
+        LOGGER.trace("Game found: {}", gameIsRunning.get());
         return gameIsRunning.get();
     }
 
@@ -37,7 +37,7 @@ public class GameMonitorService {
 
         gameIsFocused.set(focusPid.getValue() == gamePid.getValue());
 
-        LOGGER.debug("Game in focus: {}", gameIsFocused.get());
+        LOGGER.trace("Game in focus: {}", gameIsFocused.get());
         return gameIsFocused.get();
     }
 
