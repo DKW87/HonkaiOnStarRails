@@ -30,7 +30,7 @@ public class MemoryReadingService {
     }
 
     public boolean initialize() {
-        LOGGER.debug("Initializing MemoryReadingService...");
+        LOGGER.info("Initializing MemoryReadingService...");
         if (GameMonitorService.gameWindow == null) {
             LOGGER.warn("Game window not found");
             return false;
@@ -64,7 +64,7 @@ public class MemoryReadingService {
             return false;
         }
 
-        LOGGER.debug("Successfully attached to game process with ID: {}", processId);
+        LOGGER.info("Successfully attached to game process with ID: {}", processId);
         LOGGER.debug("GameAssembly.dll base address: 0x{}",
                 Long.toHexString(moduleBaseAddresses.get(CombatOffsets.GAME_ASSEMBLY_MODULE)));
         return true;
@@ -231,7 +231,7 @@ public class MemoryReadingService {
 
     public void cleanup() {
         if (processHandle != null) {
-            LOGGER.debug("Cleaning up process handle: {}", processHandle);
+            LOGGER.info("Cleaning up process handle: {}", processHandle);
             Kernel32.INSTANCE.CloseHandle(processHandle);
             processHandle = null;
         }

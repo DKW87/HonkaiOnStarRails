@@ -29,6 +29,7 @@ public class GameStateService {
     private final AtomicBoolean shutdownRequested = new AtomicBoolean(false);
 
     private ScheduledService<GameState> stateService;
+    private GameState previousGameState;
 
     public GameStateService(Label statusLabel) {
         stateLabel = statusLabel;
@@ -115,6 +116,7 @@ public class GameStateService {
     }
 
     private GameState setGameState(GameState state) {
+        logStateChange(state);
         gameState = state;
         return gameState;
     }
@@ -132,6 +134,13 @@ public class GameStateService {
             }
         });
         combatMonitorService.getMemoryReadingService().cleanup();
+    }
+
+    private void logStateChange(GameState state) {
+        if (state != previousGameState) {
+            LOGGER.info("GameState changed to: {}", state.getLabelText());
+            previousGameState = state;
+        }
     }
 
 }
