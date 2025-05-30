@@ -32,6 +32,7 @@ public class GameStateService {
     private GameState previousGameState;
 
     public GameStateService(Label statusLabel) {
+        LOGGER.info("Initializing GameStateService...");
         stateLabel = statusLabel;
         this.gameMonitorService = new GameMonitorService();
         this.keyInputService = new KeyInputService();
