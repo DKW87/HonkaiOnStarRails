@@ -7,6 +7,7 @@ module com.github.dkw87.honkaionstarrails {
     requires com.sun.jna;
     requires java.desktop;
     requires com.github.kwhat.jnativehook;
+    requires org.slf4j;
 
     opens com.github.dkw87.honkaionstarrails to javafx.fxml;
     exports com.github.dkw87.honkaionstarrails;

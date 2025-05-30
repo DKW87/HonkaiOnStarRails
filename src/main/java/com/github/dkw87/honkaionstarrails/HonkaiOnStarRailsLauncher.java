@@ -11,23 +11,31 @@ import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class HonkaiOnStarRailsLauncher extends Application {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HonkaiOnStarRailsLauncher.class);
 
     private FXMLLoader fxmlLoader;
     private CleanupService cleanupService;
 
     @Override
     public void start(Stage stage) throws IOException {
+        LOGGER.info("Starting Honkai: On Star Rails...");
         initializeStage(stage);
         registerCleanupService();
         stage.show();
+        LOGGER.info("Honkai: On Star Rails Started");
     }
 
     @Override
     public void stop() {
+        LOGGER.info("Shutting down Honkai: On Star Rails...");
         cleanupService.unregister();
     }
 
@@ -41,7 +49,9 @@ public class HonkaiOnStarRailsLauncher extends Application {
         stage.setTitle("Honkai: On Star Rails");
         stage.setScene(scene);
         stage.setAlwaysOnTop(true);
-        stage.getIcons().add(new Image(HonkaiOnStarRailsLauncher.class.getResourceAsStream("image/hosr_logo.png")));
+        stage.getIcons().add(new Image(
+                Objects.requireNonNull(HonkaiOnStarRailsLauncher.class.getResourceAsStream("image/hosr_logo.png"))
+        ));
         spawnWindowBottomRight(stage, scene);
     }
 

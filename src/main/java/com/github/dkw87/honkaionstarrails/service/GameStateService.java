@@ -6,12 +6,16 @@ import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GameStateService {
 
     public static volatile GameState gameState;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GameStateService.class);
 
     // polling in millis
     private static final int SLOW_POLL = 1000;
@@ -44,8 +48,10 @@ public class GameStateService {
     public void stop() {
         if (Platform.isFxApplicationThread()) {
             if (stateService != null) {
+                LOGGER.info("Unregistering GameStateService...");
                 stateService.cancel();
             } else {
+                LOGGER.info("Unable to unregister GameStateService, requesting threadsafe shutdown...");
                 shutdownRequested.set(true);
             }
         }
@@ -121,6 +127,7 @@ public class GameStateService {
     private void threadSafeStop() {
         Platform.runLater(() -> {
             if (stateService != null) {
+                LOGGER.info("Unregistering GameStateService from safe thread...");
                 stateService.cancel();
             }
         });
