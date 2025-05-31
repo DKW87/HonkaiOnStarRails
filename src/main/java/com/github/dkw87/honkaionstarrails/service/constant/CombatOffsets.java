@@ -5,17 +5,16 @@ public class CombatOffsets {
 
     public static final String GAME_ASSEMBLY_MODULE = "GameAssembly.dll";
 
-    public static final long COMBAT_START = 0x426C1D0L;
-    public static final long COMBAT_READY = 0x4264EE8L;
+    public static final long BASE = 0x43AFD00L;
 
-    public static final long COMBAT_PAUSED_1 = 0x42659BDL;
-    public static final long COMBAT_PAUSED_2 = 0x42659BCL;
+    public static final long IS_COMBAT_STARTING = BASE;
+    public static final long IS_COMBAT_INITIALIZING = BASE - 0x1930L;
+    public static final long IS_COMBAT_INITIALIZED = BASE - 0x1F58L;
 
-    public static final long COMBAT_VIEW_ACTIVATED = 0x426B804L;
-    public static final long COMBAT_VIEW_READY_1 = 0x42659C0L;
-    public static final long COMBAT_VIEW_READY_2 = 0x426C960L;
+    public static final long IS_COMBAT_PAUSED = BASE - 0x18F1L;
+    public static final long IS_COMBAT_VIEW_OPEN = BASE - 0x18F2L;
 
-    public static final long TURN_COUNTER = 0x426C670L;
+    public static final long TURN_COUNTER = BASE + 0x2E94L;
 
     // not stable
     public static final long SKILLPOINTS_BASE = 0x4272180L;
