@@ -30,7 +30,7 @@ public class CleanupService {
             } catch (Exception e) {
                 LOGGER.error("Shutdown hook failed to clean up", e);
             }
-        }));
+        },"JVM Shutdown Thread"));
     }
 
 }
