@@ -3,13 +3,14 @@ package com.github.dkw87.honkaionstarrails.service;
 import com.github.dkw87.honkaionstarrails.service.enumeration.GameState;
 import javafx.application.Platform;
 import javafx.concurrent.ScheduledService;
-import javafx.concurrent.Task;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 import java.util.concurrent.atomic.AtomicBoolean;
+
 
 public class GameStateService {
 
@@ -20,7 +21,7 @@ public class GameStateService {
     // polling in millis
     private static final int SLOW_POLL = 1000;
     private static final int NORMAL_POLL = 500;
-    private static final int FAST_POLL = 100;
+    private static final int FAST_POLL = 10;
 
     private final Label stateLabel;
     private final GameMonitorService gameMonitorService;
@@ -41,22 +42,9 @@ public class GameStateService {
         startMonitoring();
     }
 
-    public void start() {
-        if (stateService != null) {
-            stateService.restart();
-        }
-    }
-
     public void stop() {
-        if (Platform.isFxApplicationThread()) {
-            if (stateService != null) {
-                LOGGER.info("Unregistering GameStateService...");
-                stateService.cancel();
-            } else {
-                LOGGER.info("Unable to unregister GameStateService, requesting threadsafe shutdown...");
-                shutdownRequested.set(true);
-            }
-        }
+        LOGGER.info("Stopping GameStateService...");
+        shutdownRequested.set(true);
         combatMonitorService.getMemoryReadingService().cleanup();
     }
 
@@ -65,55 +53,46 @@ public class GameStateService {
     }
 
     private void startMonitoring() {
-        stateService = new ScheduledService<>() {
+        Thread monitoringThread = new Thread(() -> {
+            while (!shutdownRequested.get()) {
+                try {
+                    // Your existing logic from createTask().call()
+                    GameState newState;
 
-            @Override
-            protected Task<GameState> createTask() {
-                return new Task<>() {
-                    @Override
-                    protected GameState call() {
-
-                        if (shutdownRequested.get()) {
-                            threadSafeStop();
-                            return setGameState(GameState.SHUTDOWN);
-                        }
-
-                        if (!gameMonitorService.isGameRunning()) {
-                            combatMonitorService.getMemoryReadingService().cleanup();
-                            return setGameState(GameState.NOT_FOUND);
-                        }
-
-                        if (gameMonitorService.isGameFocused()) {
-
-                            if (combatMonitorService.runMonitor()) {
-                                return setGameState(GameState.EXECUTING);
-                            } else {
-                                return setGameState(GameState.IDLE);
-                            }
+                    if (!gameMonitorService.isGameRunning()) {
+                        combatMonitorService.getMemoryReadingService().cleanup();
+                        newState = setGameState(GameState.NOT_FOUND);
+                    } else if (gameMonitorService.isGameFocused()) {
+                        if (combatMonitorService.runMonitor()) {
+                            newState = setGameState(GameState.EXECUTING);
                         } else {
-                            combatMonitorService.getMemoryReadingService().cleanup();
-                            return setGameState(GameState.FOUND);
+                            newState = setGameState(GameState.IDLE);
                         }
+                    } else {
+                        combatMonitorService.getMemoryReadingService().cleanup();
+                        newState = setGameState(GameState.FOUND);
                     }
-                };
+
+                    Platform.runLater(() -> updateLabel(newState));
+
+                    // Sleep based on current state
+                    int sleepTime = switch (gameState) {
+                        case EXECUTING -> FAST_POLL;
+                        case IDLE -> NORMAL_POLL;
+                        default -> SLOW_POLL;
+                    };
+
+                    Thread.sleep(sleepTime);
+
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
             }
-        };
+        }, "GameStateService Thread");
 
-        stateService.setPeriod(Duration.millis(SLOW_POLL));
-
-        stateService.setOnSucceeded(event -> {
-            GameState monitorStatus = stateService.getValue();
-            updateLabel(monitorStatus);
-            adjustPollingByState();
-        });
-    }
-
-    private void adjustPollingByState() {
-        switch (gameState) {
-            case GameState.EXECUTING -> stateService.setPeriod(Duration.millis(FAST_POLL));
-            case GameState.IDLE -> stateService.setPeriod(Duration.millis(NORMAL_POLL));
-            default -> stateService.setPeriod(Duration.millis(SLOW_POLL));
-        }
+        monitoringThread.setDaemon(true);
+        monitoringThread.start();
     }
 
     private GameState setGameState(GameState state) {
@@ -125,16 +104,6 @@ public class GameStateService {
     private void updateLabel(GameState state) {
         stateLabel.setText(state.getLabelText());
         stateLabel.setStyle(state.getLabelStyle());
-    }
-
-    private void threadSafeStop() {
-        Platform.runLater(() -> {
-            if (stateService != null) {
-                LOGGER.info("Unregistering GameStateService from safe thread...");
-                stateService.cancel();
-            }
-        });
-        combatMonitorService.getMemoryReadingService().cleanup();
     }
 
     private void logStateChange(GameState state) {

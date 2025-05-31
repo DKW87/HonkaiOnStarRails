@@ -19,7 +19,6 @@ public class MonitoringController {
     private void initialize() {
         LOGGER.info("Initializing MonitoringController...");
         gameStateService = new GameStateService(monitoringLabel);
-        gameStateService.start();
     }
 
     public GameStateService getGameStateService() {
