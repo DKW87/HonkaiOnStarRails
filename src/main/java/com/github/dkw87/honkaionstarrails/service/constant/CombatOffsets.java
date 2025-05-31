@@ -16,26 +16,26 @@ public class CombatOffsets {
 
     public static final long TURN_COUNTER = BASE + 0x2E94L;
 
-    // not stable
-    public static final long SKILLPOINTS_BASE = 0x4272180L;
+    public static final long SKILLPOINTS_BASE = BASE - 0x3EE0L;
     public static final int[] SKILLPOINTS_PTR_CHAIN = {
-            0x318,
-            0x20,
+            0xF80,
+            0x88,
+            0x278,
+            0x38,
             0x18,
-            0x190,
-            0x10C,
+            0x10,
+            0x28,
             0
     };
-    // might actually be more stable than original
-    public static final long SKILLPOINTS_BACKUP_BASE = 0x4261C88L;
-    public static final int[] SKILLPOINTS_BACKUP_CHAIN = {
-            0x80,
-            0x158,
+
+    public static final long AMOUNT_OF_ENEMIES_BASE = BASE - 0x3EE0L;
+    public static final int[] AMOUNT_OF_ENEMIES_PTR_CHAIN = {
+            0xF80,
             0x88,
-            0x10,
-            0x1C8,
-            0x88,
-            0x28,
+            0x278,
+            0x48,
+            0x38,
+            0x54,
             0
     };
 
