@@ -55,9 +55,9 @@ public class CombatMonitorService {
         byte isCombatInitializing = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_INITIALIZING);
         byte isCombatInitialized = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_INITIALIZED);
 
-        isInCombat.set(isCombatStarting > 0
-                        && isCombatInitializing > 0
-                        && isCombatInitialized > 0);
+        isInCombat.set(isCombatStarting == 1
+                        && isCombatInitializing == 1
+                        && isCombatInitialized == 1);
     }
 
     public void isCombatPaused() {
@@ -66,7 +66,7 @@ public class CombatMonitorService {
 
         byte isPaused = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_PAUSED);
 
-        isCombatPaused.set(isPaused > 0);
+        isCombatPaused.set(isPaused == 1);
     }
 
     public void isCombatViewOpen() {
@@ -75,7 +75,7 @@ public class CombatMonitorService {
 
         byte isOpen = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_VIEW_OPEN);
 
-        isCombatViewOpen.set(isOpen > 0);
+        isCombatViewOpen.set(isOpen == 1);
     }
 
     public MemoryReadingService getMemoryReadingService() {
