@@ -51,35 +51,31 @@ public class CombatMonitorService {
         Long gameAssemblyModule = getModuleBaseAddress(CombatOffsets.GAME_ASSEMBLY_MODULE);
         if (moduleNotFound(gameAssemblyModule)) return;
 
-        byte combatStart = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.COMBAT_START);
-        byte combatReady = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.COMBAT_READY);
+        byte isCombatStarting = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_STARTING);
+        byte isCombatInitializing = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_INITIALIZING);
+        byte isCombatInitialized = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_INITIALIZED);
 
-        isInCombat.set(combatStart > 0
-                        && combatReady > 0);
+        isInCombat.set(isCombatStarting > 0
+                        && isCombatInitializing > 0
+                        && isCombatInitialized > 0);
     }
 
     public void isCombatPaused() {
         Long gameAssemblyModule = getModuleBaseAddress(CombatOffsets.GAME_ASSEMBLY_MODULE);
         if (moduleNotFound(gameAssemblyModule)) return;
 
-        byte combatPaused1 = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.COMBAT_PAUSED_1);
-        byte combatPaused2 = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.COMBAT_PAUSED_2);
+        byte isPaused = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_PAUSED);
 
-        isCombatPaused.set(combatPaused1 > 0
-                            && combatPaused2 > 0);
+        isCombatPaused.set(isPaused > 0);
     }
 
     public void isCombatViewOpen() {
         Long gameAssemblyModule = getModuleBaseAddress(CombatOffsets.GAME_ASSEMBLY_MODULE);
         if (moduleNotFound(gameAssemblyModule)) return;
 
-        byte combatViewActivated = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.COMBAT_VIEW_ACTIVATED);
-        byte combatViewReady1 = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.COMBAT_VIEW_READY_1);
-        byte combatViewReady2 = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.COMBAT_VIEW_READY_2);
+        byte isOpen = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_VIEW_OPEN);
 
-        isCombatViewOpen.set(combatViewActivated >0
-                && combatViewReady1 > 0
-                && combatViewReady2 > 0);
+        isCombatViewOpen.set(isOpen > 0);
     }
 
     public MemoryReadingService getMemoryReadingService() {
