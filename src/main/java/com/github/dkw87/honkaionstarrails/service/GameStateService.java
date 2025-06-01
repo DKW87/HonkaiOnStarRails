@@ -21,7 +21,7 @@ public class GameStateService {
     // polling in millis
     private static final int SLOW_POLL = 1000;
     private static final int NORMAL_POLL = 500;
-    private static final int FAST_POLL = 10;
+    private static final int FAST_POLL = 100;
 
     private final Label stateLabel;
     private final GameMonitorService gameMonitorService;
