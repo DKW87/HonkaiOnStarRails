@@ -42,7 +42,7 @@
 - TBD.
 
 ### How to help
-Searching for static addresses or reliable pointer chains to read data from is very time-consuming. I'd be happy with any being provided! Please refer [here](https://github.com/DKW87/HonkaiOnStarRails/blob/main/src/main/java/com/github/dkw87/honkaionstarrails/service/constant/CombatOffsets.java) for currently available addresses.    
+Searching for reliable static pointer chains to read data from is very time-consuming. I'd be happy with any being provided! Please refer [here](https://github.com/DKW87/HonkaiOnStarRails/blob/main/src/main/java/com/github/dkw87/honkaionstarrails/service/constant/CombatOffsets.java) and [here](https://github.com/DKW87/HonkaiOnStarRails/blob/main/src/main/java/com/github/dkw87/honkaionstarrails/service/constant/CombatPtrChains.java) for currently available chains.      
 
 ### Application requires
 - **administrator privileges** in order for it to work;

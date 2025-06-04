@@ -1,6 +1,7 @@
 package com.github.dkw87.honkaionstarrails.service;
 
 import com.github.dkw87.honkaionstarrails.service.constant.CombatOffsets;
+import com.github.dkw87.honkaionstarrails.service.constant.CombatPtrChains;
 import com.github.dkw87.honkaionstarrails.service.win32interface.PsapiExtended;
 import com.github.dkw87.honkaionstarrails.service.win32interface.User32Extended;
 import com.sun.jna.Memory;
@@ -134,19 +135,19 @@ public class MemoryReadingService {
         if (!gameModuleExists(gameModuleBase)) return -1;
 
         // Start with the base pointer
-        long address = gameModuleBase + CombatOffsets.SKILLPOINTS_BASE;
+        long address = gameModuleBase + CombatOffsets.SKILLPOINTS;
 
         // Read first pointer
         address = readLongFromAddress(address);
         if (address == 0) return -1;
 
         // Follow chain EXCEPT for the last offset
-        for (int i = 0; i < CombatOffsets.SKILLPOINTS_PTR_CHAIN.length - 1; i++) {
+        for (int i = 0; i < CombatPtrChains.SKILLPOINTS.length - 1; i++) {
             // Get next address to read from
-            long nextAddr = address + CombatOffsets.SKILLPOINTS_PTR_CHAIN[i];
+            long nextAddr = address + CombatPtrChains.SKILLPOINTS[i];
 
             // If this is the last step, read the int value instead of a pointer
-            if (i == CombatOffsets.SKILLPOINTS_PTR_CHAIN.length - 2) {
+            if (i == CombatPtrChains.SKILLPOINTS.length - 2) {
                 return readIntFromAddress(nextAddr);
             }
 
