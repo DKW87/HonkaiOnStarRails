@@ -134,7 +134,7 @@ public class MemoryReadingService {
         if (!gameModuleExists(gameModuleBase)) return -1;
 
         // Start with the base pointer
-        long address = gameModuleBase + CombatOffsets.SKILLPOINTS_BASE;
+        long address = gameModuleBase + CombatOffsets.SKILLPOINTS;
 
         // Read first pointer
         address = readLongFromAddress(address);
