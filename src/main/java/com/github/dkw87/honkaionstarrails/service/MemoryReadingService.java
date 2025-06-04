@@ -139,15 +139,20 @@ public class MemoryReadingService {
 
         // Read first pointer
         address = readLongFromAddress(address);
-        if (address == 0) return -1;
 
         // Follow chain EXCEPT for the last offset
-        for (int i = 0; i < CombatPtrChains.SKILLPOINTS.length - 1; i++) {
+        return followPTRChain(address, CombatPtrChains.SKILLPOINTS);
+    }
+
+    public int followPTRChain(Long address, int[] ptrChain) {
+        if (address == 0) return -1;
+
+        for (int i = 0; i < ptrChain.length; i++) {
             // Get next address to read from
-            long nextAddr = address + CombatPtrChains.SKILLPOINTS[i];
+            long nextAddr = address + ptrChain[i];
 
             // If this is the last step, read the int value instead of a pointer
-            if (i == CombatPtrChains.SKILLPOINTS.length - 2) {
+            if (i == ptrChain.length - 1) {
                 return readIntFromAddress(nextAddr);
             }
 

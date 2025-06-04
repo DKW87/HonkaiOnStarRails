@@ -1,6 +1,7 @@
 package com.github.dkw87.honkaionstarrails.service;
 
 import com.github.dkw87.honkaionstarrails.service.constant.CombatOffsets;
+import com.github.dkw87.honkaionstarrails.service.constant.CombatPtrChains;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,13 +52,10 @@ public class CombatMonitorService {
         Long gameAssemblyModule = getModuleBaseAddress(CombatOffsets.GAME_ASSEMBLY_MODULE);
         if (moduleNotFound(gameAssemblyModule)) return;
 
-        byte isCombatStarting = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_STARTING);
-        byte isCombatInitializing = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_INITIALIZING);
-        byte isCombatInitialized = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_INITIALIZED);
+        long address = memoryReadingService.readLongFromAddress(gameAssemblyModule + CombatOffsets.IN_COMBAT);
+        int inCombat = memoryReadingService.followPTRChain(address, CombatPtrChains.IN_COMBAT);
 
-        isInCombat.set(isCombatStarting == 1
-                        && isCombatInitializing == 1
-                        && isCombatInitialized == 1);
+        isInCombat.set(inCombat == 1);
     }
 
     public void isCombatPaused() {
