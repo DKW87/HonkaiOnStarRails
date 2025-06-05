@@ -17,7 +17,7 @@ public class CombatOffsets {
     // stats
     public static final long AMOUNT_OF_ENEMIES = ANCHOR - 0x8768L;
     public static final long SKILLPOINTS = ANCHOR - 0x8768L;
-    public static final long TURN_COUNTER = ANCHOR + 0x1FB50L;
+    public static final long TURN_COUNTER = ANCHOR + 0xEAAC8L;
 
     private CombatOffsets() {}
 
