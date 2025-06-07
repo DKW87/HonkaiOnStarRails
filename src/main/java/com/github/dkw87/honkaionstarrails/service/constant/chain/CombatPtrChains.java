@@ -1,4 +1,4 @@
-package com.github.dkw87.honkaionstarrails.service.constant;
+package com.github.dkw87.honkaionstarrails.service.constant.chain;
 
 public class CombatPtrChains {
 

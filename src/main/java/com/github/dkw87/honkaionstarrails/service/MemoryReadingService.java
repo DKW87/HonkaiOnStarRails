@@ -1,7 +1,7 @@
 package com.github.dkw87.honkaionstarrails.service;
 
-import com.github.dkw87.honkaionstarrails.service.constant.CombatOffsets;
-import com.github.dkw87.honkaionstarrails.service.constant.CombatPtrChains;
+import com.github.dkw87.honkaionstarrails.service.constant.offset.CombatOffsets;
+import com.github.dkw87.honkaionstarrails.service.constant.chain.CombatPtrChains;
 import com.github.dkw87.honkaionstarrails.service.constant.MemoryConst;
 import com.github.dkw87.honkaionstarrails.service.win32interface.PsapiExtended;
 import com.github.dkw87.honkaionstarrails.service.win32interface.User32Extended;

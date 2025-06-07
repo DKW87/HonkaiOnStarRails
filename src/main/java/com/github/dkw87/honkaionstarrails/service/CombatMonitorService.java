@@ -1,7 +1,7 @@
 package com.github.dkw87.honkaionstarrails.service;
 
-import com.github.dkw87.honkaionstarrails.service.constant.CombatOffsets;
-import com.github.dkw87.honkaionstarrails.service.constant.CombatPtrChains;
+import com.github.dkw87.honkaionstarrails.service.constant.offset.CombatOffsets;
+import com.github.dkw87.honkaionstarrails.service.constant.chain.CombatPtrChains;
 import com.github.dkw87.honkaionstarrails.service.constant.MemoryConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
