@@ -2,6 +2,7 @@ package com.github.dkw87.honkaionstarrails.service;
 
 import com.github.dkw87.honkaionstarrails.service.constant.CombatOffsets;
 import com.github.dkw87.honkaionstarrails.service.constant.CombatPtrChains;
+import com.github.dkw87.honkaionstarrails.service.constant.MemoryConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +50,7 @@ public class CombatMonitorService {
     }
 
     public void isInCombat() {
-        Long gameAssemblyModule = getModuleBaseAddress(CombatOffsets.GAME_ASSEMBLY_MODULE);
+        Long gameAssemblyModule = getModuleBaseAddress(MemoryConst.GAME_ASSEMBLY_MODULE);
         if (moduleNotFound(gameAssemblyModule)) return;
 
         long address = memoryReadingService.readLongFromAddress(gameAssemblyModule + CombatOffsets.IN_COMBAT);
@@ -59,7 +60,7 @@ public class CombatMonitorService {
     }
 
     public void isCombatPaused() {
-        Long gameAssemblyModule = getModuleBaseAddress(CombatOffsets.GAME_ASSEMBLY_MODULE);
+        Long gameAssemblyModule = getModuleBaseAddress(MemoryConst.GAME_ASSEMBLY_MODULE);
         if (moduleNotFound(gameAssemblyModule)) return;
 
         byte isPaused = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_PAUSED);
@@ -68,7 +69,7 @@ public class CombatMonitorService {
     }
 
     public void isCombatViewOpen() {
-        Long gameAssemblyModule = getModuleBaseAddress(CombatOffsets.GAME_ASSEMBLY_MODULE);
+        Long gameAssemblyModule = getModuleBaseAddress(MemoryConst.GAME_ASSEMBLY_MODULE);
         if (moduleNotFound(gameAssemblyModule)) return;
 
         byte isOpen = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_VIEW_OPEN);

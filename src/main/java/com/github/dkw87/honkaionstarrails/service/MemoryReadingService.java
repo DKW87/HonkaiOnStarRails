@@ -2,6 +2,7 @@ package com.github.dkw87.honkaionstarrails.service;
 
 import com.github.dkw87.honkaionstarrails.service.constant.CombatOffsets;
 import com.github.dkw87.honkaionstarrails.service.constant.CombatPtrChains;
+import com.github.dkw87.honkaionstarrails.service.constant.MemoryConst;
 import com.github.dkw87.honkaionstarrails.service.win32interface.PsapiExtended;
 import com.github.dkw87.honkaionstarrails.service.win32interface.User32Extended;
 import com.sun.jna.Memory;
@@ -67,7 +68,7 @@ public class MemoryReadingService {
 
         LOGGER.info("Successfully attached to game process with ID: {}", processId);
         LOGGER.debug("GameAssembly.dll base address: 0x{}",
-                Long.toHexString(moduleBaseAddresses.get(CombatOffsets.GAME_ASSEMBLY_MODULE)));
+                Long.toHexString(moduleBaseAddresses.get(MemoryConst.GAME_ASSEMBLY_MODULE)));
         return true;
     }
 
@@ -120,7 +121,7 @@ public class MemoryReadingService {
             LOGGER.debug("Found largest module (GameAssembly.dll) at 0x{} size: {}MB",
                     Long.toHexString(largestModuleAddress), (largestModuleSize / (1024 * 1024)));
 
-            moduleBaseAddresses.put(CombatOffsets.GAME_ASSEMBLY_MODULE, largestModuleAddress);
+            moduleBaseAddresses.put(MemoryConst.GAME_ASSEMBLY_MODULE, largestModuleAddress);
             return true;
         }
 
@@ -131,7 +132,7 @@ public class MemoryReadingService {
     public int getSkillPoints() {
         if (!isInitialized()) return -1;
 
-        Long gameModuleBase = moduleBaseAddresses.get(CombatOffsets.GAME_ASSEMBLY_MODULE);
+        Long gameModuleBase = moduleBaseAddresses.get(MemoryConst.GAME_ASSEMBLY_MODULE);
         if (!gameModuleExists(gameModuleBase)) return -1;
 
         // Start with the base pointer
