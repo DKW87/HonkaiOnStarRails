@@ -1,10 +1,10 @@
 package com.github.dkw87.honkaionstarrails.service;
 
 import com.github.dkw87.honkaionstarrails.service.enumeration.GameState;
+import com.github.dkw87.honkaionstarrails.shared.utility.dev.DevUtil;
 import javafx.application.Platform;
 import javafx.concurrent.ScheduledService;
 import javafx.scene.control.Label;
-import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +65,7 @@ public class GameStateService {
                     } else if (gameMonitorService.isGameFocused()) {
                         if (combatMonitorService.runMonitor()) {
                             newState = setGameState(GameState.EXECUTING);
+                            DevUtil.takeScreenshot();
                         } else {
                             newState = setGameState(GameState.IDLE);
                         }
