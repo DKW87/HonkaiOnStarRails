@@ -65,7 +65,7 @@ public class GameStateService {
                     } else if (gameMonitorService.isGameFocused()) {
                         if (combatMonitorService.runMonitor()) {
                             newState = setGameState(GameState.EXECUTING);
-                            DevUtil.takeScreenshot();
+                            DevUtil.takeGameWindowScreenshot();
                         } else {
                             newState = setGameState(GameState.IDLE);
                         }

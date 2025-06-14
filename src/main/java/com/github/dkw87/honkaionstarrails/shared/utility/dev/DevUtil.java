@@ -1,5 +1,8 @@
 package com.github.dkw87.honkaionstarrails.shared.utility.dev;
 
+import com.github.dkw87.honkaionstarrails.service.GameMonitorService;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,8 +73,62 @@ public class DevUtil {
         } catch (IOException e) {
             LOGGER.error("Failed to save screenshot: {}", e.getMessage());
         } catch (InterruptedException e) {
-            LOGGER.error("Failed to take screenshot as thread was interrupted: {}", e.getMessage());
+            LOGGER.warn("Thread was interrupted before it could make a screenshot: {}", e.getMessage());
             Thread.currentThread().interrupt();
+        }
+    }
+
+    public static void takeGameWindowScreenshot() {
+        try {
+            WinDef.HWND gameWindow = GameMonitorService.gameWindow;
+
+            if (gameWindow == null) {
+                LOGGER.debug("GameMonitorService.gameWindow is null");
+                return;
+            }
+
+            LOGGER.debug("Taking screenshot of GameWindow in 3 seconds...");
+            Thread.sleep(3000);
+
+            // Get window bounds
+            WinDef.RECT windowRect = new WinDef.RECT();
+            User32.INSTANCE.GetWindowRect(gameWindow, windowRect);
+
+            LOGGER.debug("Window bounds: {},{} to {},{}",
+                    windowRect.left, windowRect.top, windowRect.right, windowRect.bottom);
+
+            // Calculate window dimensions
+            int x = windowRect.left;
+            int y = windowRect.top;
+            int width = windowRect.right - windowRect.left;
+            int height = windowRect.bottom - windowRect.top;
+
+            // Capture the window area
+            Robot robot = new Robot();
+            Rectangle captureArea = new Rectangle(x, y, width, height);
+            BufferedImage screenshot = robot.createScreenCapture(captureArea);
+
+            // Create screenshots directory
+            File screenshotsDir = new File("screenshots");
+            if (!screenshotsDir.exists()) {
+                screenshotsDir.mkdirs();
+            }
+
+            // Generate filename
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"));
+            String filename = "gamewindow_" + width + "x" + height + "_" + timestamp + ".png";
+            File outputFile = new File(screenshotsDir, filename);
+
+            // Save the screenshot
+            ImageIO.write(screenshot, "png", outputFile);
+            System.out.println("Game window screenshot saved: " + outputFile.getAbsolutePath());
+            System.out.println("Check if it's a static image or actual live game content!");
+
+            // Sleep for 10 seconds
+            Thread.sleep(10000);
+
+        } catch (Exception e) {
+            LOGGER.error("Failed to capture game window: {}", e.getMessage());
         }
     }
 
