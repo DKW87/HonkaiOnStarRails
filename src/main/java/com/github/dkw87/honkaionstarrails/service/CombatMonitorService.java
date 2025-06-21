@@ -6,13 +6,11 @@ import com.github.dkw87.honkaionstarrails.service.constant.MemoryConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 public class CombatMonitorService {
 
-    public static final AtomicBoolean isInCombat = new AtomicBoolean(false);
-    public static final AtomicBoolean isCombatPaused = new AtomicBoolean(false);
-    public static final AtomicBoolean isCombatViewOpen = new AtomicBoolean(false);
+    public static volatile boolean isInCombat;
+    public static volatile boolean isCombatPaused;
+    public static volatile boolean isCombatViewOpen;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CombatMonitorService.class);
 
@@ -30,22 +28,22 @@ public class CombatMonitorService {
     public boolean runMonitor() {
         isInCombat();
         logCombatState();
-        if (isInCombat.get()) {
+        if (isInCombat) {
             isCombatPaused();
             isCombatViewOpen();
         }
-        return isInCombat.get();
+        return isInCombat;
     }
 
     private void logCombatState() {
-        if (isInCombat.get() != lastInCombat ||
-            isCombatPaused.get() != lastCombatPaused ||
-            isCombatViewOpen.get() != lastCombatViewOpen) {
+        if (isInCombat != lastInCombat ||
+            isCombatPaused != lastCombatPaused ||
+            isCombatViewOpen != lastCombatViewOpen) {
             LOGGER.info("CombatState info: isInCombat - {}, isCombatPaused - {}, isCombatViewOpen - {}",
-                    isInCombat.get(), isCombatPaused.get(), isCombatViewOpen.get());
-            lastInCombat = isInCombat.get();
-            lastCombatPaused = isCombatPaused.get();
-            lastCombatViewOpen = isCombatViewOpen.get();
+                    isInCombat, isCombatPaused, isCombatViewOpen);
+            lastInCombat = isInCombat;
+            lastCombatPaused = isCombatPaused;
+            lastCombatViewOpen = isCombatViewOpen;
         }
     }
 
@@ -56,7 +54,7 @@ public class CombatMonitorService {
         long address = memoryReadingService.readLongFromAddress(gameAssemblyModule + CombatOffsets.IN_COMBAT);
         int inCombat = memoryReadingService.followPTRChain(address, CombatPtrChains.IN_COMBAT);
 
-        isInCombat.set(inCombat == 1);
+        isInCombat = (inCombat == 1);
     }
 
     public void isCombatPaused() {
@@ -65,7 +63,7 @@ public class CombatMonitorService {
 
         byte isPaused = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_PAUSED);
 
-        isCombatPaused.set(isPaused == 1);
+        isCombatPaused = (isPaused == 1);
     }
 
     public void isCombatViewOpen() {
@@ -74,7 +72,7 @@ public class CombatMonitorService {
 
         byte isOpen = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_VIEW_OPEN);
 
-        isCombatViewOpen.set(isOpen == 1);
+        isCombatViewOpen = (isOpen == 1);
     }
 
     public MemoryReadingService getMemoryReadingService() {
