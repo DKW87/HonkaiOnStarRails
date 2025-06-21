@@ -10,7 +10,12 @@
     <name>HonkaiOnStarRails</name>
 
     <properties>
+        <!-- Build -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <source.version>21</source.version>
+        <target.version>21</target.version>
+        <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
+        <javafx-maven-plugin.version>0.0.8</javafx-maven-plugin.version>
 
         <!-- Maintainability -->
         <lombok.version>1.18.38</lombok.version>
@@ -100,16 +105,23 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
+                    <source>${source.version}</source>
+                    <target>${target.version}</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.8</version>
+                <version>${javafx-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <!-- Default configuration for running with: mvn clean javafx:run -->
