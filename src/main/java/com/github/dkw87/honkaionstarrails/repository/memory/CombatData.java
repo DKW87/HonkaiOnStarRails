@@ -1,11 +1,15 @@
 package com.github.dkw87.honkaionstarrails.repository.memory;
 
+import java.awt.image.BufferedImage;
+
 public class CombatData {
 
     private volatile boolean inCombat;
     private volatile int amountOfEnemies;
     private volatile int currentSkillpoints;
     private volatile int turn;
+    private volatile BufferedImage currentTurnImage;
+    private volatile int lastAnalyzedTurn;
 
     private CombatData() {}
 
@@ -26,6 +30,14 @@ public class CombatData {
         return turn;
     }
 
+    public BufferedImage getCurrentTurnImage() {
+        return currentTurnImage;
+    }
+
+    public int getLastAnalyzedTurn() {
+        return lastAnalyzedTurn;
+    }
+
     // setters
     public void setInCombat(boolean inCombat) {
         this.inCombat = inCombat;
@@ -41,6 +53,14 @@ public class CombatData {
 
     public void setTurn(int turn) {
         this.turn = turn;
+    }
+
+    public void setLastAnalyzedTurn(int lastAnalyzedTurn) {
+        this.lastAnalyzedTurn = lastAnalyzedTurn;
+    }
+
+    public void setCurrentTurnImage(BufferedImage currentTurnImage) {
+        this.currentTurnImage = currentTurnImage;
     }
 
 }
