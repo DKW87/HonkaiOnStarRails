@@ -29,7 +29,6 @@ public class GameStateService {
     public GameStateService(Label statusLabel) {
         LOGGER.info("Initializing GameStateService...");
         stateLabel = statusLabel;
-        shutdownRequested = false;
         this.gameMonitorService = new GameMonitorService();
         this.keyInputService = new KeyInputService();
         this.combatMonitorService = new CombatMonitorService();
