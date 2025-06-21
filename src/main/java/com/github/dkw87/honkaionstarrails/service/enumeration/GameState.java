@@ -1,5 +1,10 @@
 package com.github.dkw87.honkaionstarrails.service.enumeration;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public enum GameState {
     SHUTDOWN("Shutting down...", "-fx-text-fill: black;"),
     NOT_FOUND("Game is not running or was not detected", "-fx-text-fill: red;"),
@@ -9,18 +14,5 @@ public enum GameState {
 
     private final String labelText;
     private final String labelStyle;
-
-    GameState(String labelText, String labelStyle) {
-        this.labelText = labelText;
-        this.labelStyle = labelStyle;
-    }
-
-    public String getLabelText() {
-        return labelText;
-    }
-
-    public String getLabelStyle() {
-        return labelStyle;
-    }
 
 }
