@@ -1,16 +1,11 @@
 package com.github.dkw87.honkaionstarrails.service;
 
 import com.github.dkw87.honkaionstarrails.service.enumeration.GameState;
-import com.github.dkw87.honkaionstarrails.shared.utility.dev.DevUtil;
+import com.github.dkw87.honkaionstarrails.shared.utility.dev.AOBScannerUtil;
 import javafx.application.Platform;
-import javafx.concurrent.ScheduledService;
 import javafx.scene.control.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
-import java.util.concurrent.atomic.AtomicBoolean;
-
 
 public class GameStateService {
 
@@ -27,14 +22,14 @@ public class GameStateService {
     private final GameMonitorService gameMonitorService;
     private final KeyInputService keyInputService;
     private final CombatMonitorService combatMonitorService;
-    private final AtomicBoolean shutdownRequested = new AtomicBoolean(false);
 
-    private ScheduledService<GameState> stateService;
+    private volatile boolean shutdownRequested;
     private GameState previousGameState;
 
     public GameStateService(Label statusLabel) {
         LOGGER.info("Initializing GameStateService...");
         stateLabel = statusLabel;
+        shutdownRequested = false;
         this.gameMonitorService = new GameMonitorService();
         this.keyInputService = new KeyInputService();
         this.combatMonitorService = new CombatMonitorService();
@@ -44,7 +39,7 @@ public class GameStateService {
 
     public void stop() {
         LOGGER.info("Stopping GameStateService...");
-        shutdownRequested.set(true);
+        shutdownRequested = true;
         combatMonitorService.getMemoryReadingService().cleanup();
     }
 
@@ -54,7 +49,7 @@ public class GameStateService {
 
     private void startMonitoring() {
         Thread monitoringThread = new Thread(() -> {
-            while (!shutdownRequested.get()) {
+            while (!shutdownRequested) {
                 try {
                     // Your existing logic from createTask().call()
                     GameState newState;
@@ -65,7 +60,7 @@ public class GameStateService {
                     } else if (gameMonitorService.isGameFocused()) {
                         if (combatMonitorService.runMonitor()) {
                             newState = setGameState(GameState.EXECUTING);
-                            DevUtil.takeGameWindowScreenshot();
+                            AOBScannerUtil.scanForPattern();
                         } else {
                             newState = setGameState(GameState.IDLE);
                         }
