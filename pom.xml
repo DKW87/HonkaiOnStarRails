@@ -21,7 +21,7 @@
         <lombok.version>1.18.38</lombok.version>
 
         <!-- Automated testing -->
-        <junit.version>5.12.2</junit.version>
+        <junit.version>5.13.1</junit.version>
 
         <!-- JavaFX -->
         <javafx-controls.version>21.0.7</javafx-controls.version>
@@ -37,7 +37,7 @@
 
         <!-- logging  -->
         <slf4j-api.version>2.0.17</slf4j-api.version>
-        <log4j-slf4j-impl.version>2.24.3</log4j-slf4j-impl.version>
+        <log4j-slf4j-impl.version>2.25.0</log4j-slf4j-impl.version>
     </properties>
 
     <dependencies>
