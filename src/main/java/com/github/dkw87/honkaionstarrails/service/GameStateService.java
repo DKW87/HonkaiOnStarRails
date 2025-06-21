@@ -4,6 +4,7 @@ import com.github.dkw87.honkaionstarrails.service.enumeration.GameState;
 import com.github.dkw87.honkaionstarrails.shared.utility.dev.AOBScannerUtil;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,9 +19,10 @@ public class GameStateService {
     private static final int NORMAL_POLL = 500;
     private static final int FAST_POLL = 100;
 
+    @Getter
+    private final KeyInputService keyInputService;
     private final Label stateLabel;
     private final GameMonitorService gameMonitorService;
-    private final KeyInputService keyInputService;
     private final CombatMonitorService combatMonitorService;
 
     private volatile boolean shutdownRequested;
@@ -40,10 +42,6 @@ public class GameStateService {
         LOGGER.info("Stopping GameStateService...");
         shutdownRequested = true;
         combatMonitorService.getMemoryReadingService().cleanup();
-    }
-
-    public KeyInputService getKeyInputService() {
-        return keyInputService;
     }
 
     private void startMonitoring() {
