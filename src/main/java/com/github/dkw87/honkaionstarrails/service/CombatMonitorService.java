@@ -3,6 +3,7 @@ package com.github.dkw87.honkaionstarrails.service;
 import com.github.dkw87.honkaionstarrails.service.constant.offset.CombatOffsets;
 import com.github.dkw87.honkaionstarrails.service.constant.chain.CombatPtrChains;
 import com.github.dkw87.honkaionstarrails.service.constant.MemoryConst;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +15,7 @@ public class CombatMonitorService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CombatMonitorService.class);
 
+    @Getter
     private final MemoryReadingService memoryReadingService;
 
     private boolean lastInCombat;
@@ -73,10 +75,6 @@ public class CombatMonitorService {
         byte isOpen = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_VIEW_OPEN);
 
         isCombatViewOpen = (isOpen == 1);
-    }
-
-    public MemoryReadingService getMemoryReadingService() {
-        return memoryReadingService;
     }
 
     private Long getModuleBaseAddress(String module) {
