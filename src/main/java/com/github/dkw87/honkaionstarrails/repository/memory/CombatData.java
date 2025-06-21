@@ -18,4 +18,12 @@ public class CombatData {
 
     private CombatData() {}
 
+    public static CombatData getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+
+    private static class SingletonHolder {
+        private static final CombatData INSTANCE = new CombatData();
+    }
+
 }
