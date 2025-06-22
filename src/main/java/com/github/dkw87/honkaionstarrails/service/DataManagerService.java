@@ -94,6 +94,7 @@ public class DataManagerService {
 
     private void updateCombatData() {
         if (combatData.getTurn() > 1) {
+            // to flush/clear the buffer and prevent memory from increasing too rapidly
             BufferedImage oldImage = combatData.getCurrentTurnImage();
             oldImage.flush();
             combatData.setCurrentTurnImage(null);
