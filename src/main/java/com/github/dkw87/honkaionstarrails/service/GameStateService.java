@@ -22,6 +22,7 @@ public class GameStateService {
     private final Label stateLabel;
     private final GameMonitorService gameMonitorService;
     private final CombatMonitorService combatMonitorService;
+    private final DataManagerService dataManagerService;
 
     private volatile boolean shutdownRequested;
     private GameState previousGameState;
@@ -31,6 +32,7 @@ public class GameStateService {
         stateLabel = statusLabel;
         this.gameMonitorService = new GameMonitorService();
         this.keyInputService = KeyInputService.getInstance();
+        this.dataManagerService = new DataManagerService();
         this.combatMonitorService = new CombatMonitorService();
         keyInputService.initialize();
         startMonitoring();
@@ -54,7 +56,7 @@ public class GameStateService {
                     } else if (gameMonitorService.isGameFocused()) {
                         if (combatMonitorService.runMonitor()) {
                             newState = setGameState(GameState.EXECUTING);
-
+                            dataManagerService.notifyGameIsInCombat();
                         } else {
                             newState = setGameState(GameState.IDLE);
                         }
