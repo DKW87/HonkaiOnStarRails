@@ -1,5 +1,6 @@
 package com.github.dkw87.honkaionstarrails.service;
 
+import com.github.dkw87.honkaionstarrails.repository.memory.CombatData;
 import com.github.dkw87.honkaionstarrails.service.constant.offset.CombatOffsets;
 import com.github.dkw87.honkaionstarrails.service.constant.chain.CombatPtrChains;
 import com.github.dkw87.honkaionstarrails.service.constant.MemoryConst;
@@ -17,6 +18,7 @@ public class CombatMonitorService {
 
     @Getter
     private final MemoryReadingService memoryReadingService;
+    private final CombatData combatData;
 
     private boolean lastInCombat;
     private boolean lastCombatPaused;
@@ -25,6 +27,7 @@ public class CombatMonitorService {
     public CombatMonitorService() {
         LOGGER.info("Initializing CombatMonitorService...");
         this.memoryReadingService = MemoryReadingService.getInstance();
+        this.combatData = CombatData.getInstance();
     }
 
     public boolean runMonitor() {
@@ -57,6 +60,7 @@ public class CombatMonitorService {
         int inCombat = memoryReadingService.followPTRChain(address, CombatPtrChains.IN_COMBAT);
 
         isInCombat = (inCombat == 1);
+        combatData.setInCombat(isInCombat);
     }
 
     public void isCombatPaused() {
