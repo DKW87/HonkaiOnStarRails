@@ -21,11 +21,11 @@ import java.util.Map;
 
 public class MemoryReadingService {
 
-    protected static final Logger LOGGER = LoggerFactory.getLogger(MemoryReadingService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MemoryReadingService.class);
 
-    protected WinNT.HANDLE processHandle;
-    protected int processId;
-    protected Map<String, Long> moduleBaseAddresses = new HashMap<>();
+    private WinNT.HANDLE processHandle;
+    private int processId;
+    private Map<String, Long> moduleBaseAddresses = new HashMap<>();
 
     private MemoryReadingService() {}
 
