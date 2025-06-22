@@ -48,7 +48,6 @@ public class GameStateService {
         Thread monitoringThread = new Thread(() -> {
             while (!shutdownRequested) {
                 try {
-                    // Your existing logic from createTask().call()
                     GameState newState;
 
                     if (!gameMonitorService.isGameRunning()) {
