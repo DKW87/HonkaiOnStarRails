@@ -10,7 +10,9 @@ public class KeyInputService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KeyInputService.class);
 
-    public void initialize() {
+    private KeyInputService() {}
+
+    protected void initialize() {
         LOGGER.info("Initializing KeyInputService...");
         try {
             // disable JNativeHook lib logging
@@ -23,7 +25,7 @@ public class KeyInputService {
         }
     }
 
-    public void unregister() {
+    protected void unregister() {
         LOGGER.info("Unregistering KeyInputService...");
         try {
             GlobalScreen.unregisterNativeHook();
@@ -32,7 +34,7 @@ public class KeyInputService {
         }
     }
 
-    public void pressKey(int keyCode) {
+    protected void pressKey(int keyCode) {
         try {
             NativeKeyEvent pressEvent = new NativeKeyEvent(
                     NativeKeyEvent.NATIVE_KEY_PRESSED,
@@ -59,11 +61,20 @@ public class KeyInputService {
         }
     }
 
-    private void pressDelay() {
+    protected void pressDelay() {
         try {
             Thread.sleep(50);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
+
+    public static KeyInputService getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+
+    private static class SingletonHolder {
+        private static final KeyInputService INSTANCE = new KeyInputService();
+    }
+
 }

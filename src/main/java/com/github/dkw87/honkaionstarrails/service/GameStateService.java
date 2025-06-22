@@ -18,7 +18,6 @@ public class GameStateService {
     private static final int NORMAL_POLL = 500;
     private static final int FAST_POLL = 100;
 
-    @Getter
     private final KeyInputService keyInputService;
     private final Label stateLabel;
     private final GameMonitorService gameMonitorService;
@@ -31,7 +30,7 @@ public class GameStateService {
         LOGGER.info("Initializing GameStateService...");
         stateLabel = statusLabel;
         this.gameMonitorService = new GameMonitorService();
-        this.keyInputService = new KeyInputService();
+        this.keyInputService = KeyInputService.getInstance();
         this.combatMonitorService = new CombatMonitorService();
         keyInputService.initialize();
         startMonitoring();
