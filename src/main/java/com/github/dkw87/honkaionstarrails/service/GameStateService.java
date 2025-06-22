@@ -1,7 +1,7 @@
 package com.github.dkw87.honkaionstarrails.service;
 
 import com.github.dkw87.honkaionstarrails.service.enumeration.GameState;
-import com.github.dkw87.honkaionstarrails.shared.utility.dev.AOBScannerUtil;
+import com.github.dkw87.honkaionstarrails.shared.utility.dev.DevUtil;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import lombok.Getter;
@@ -57,7 +57,7 @@ public class GameStateService {
                     } else if (gameMonitorService.isGameFocused()) {
                         if (combatMonitorService.runMonitor()) {
                             newState = setGameState(GameState.EXECUTING);
-                            AOBScannerUtil.scanForPattern();
+
                         } else {
                             newState = setGameState(GameState.IDLE);
                         }
