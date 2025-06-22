@@ -24,7 +24,7 @@ public class CombatMonitorService {
 
     public CombatMonitorService() {
         LOGGER.info("Initializing CombatMonitorService...");
-        this.memoryReadingService = new MemoryReadingService();
+        this.memoryReadingService = MemoryReadingService.getInstance();
     }
 
     public boolean runMonitor() {
