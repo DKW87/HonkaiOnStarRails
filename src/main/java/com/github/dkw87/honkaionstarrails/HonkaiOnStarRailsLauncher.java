@@ -66,7 +66,7 @@ public class HonkaiOnStarRailsLauncher extends Application {
     private void registerCleanupService() {
         MonitoringController controller = fxmlLoader.getController();
         GameStateService gameStateService = controller.getGameStateService();
-        KeyInputService keyInputService = gameStateService.getKeyInputService();
+        KeyInputService keyInputService = KeyInputService.getInstance();
         this.cleanupService = new CleanupService(gameStateService, keyInputService);
     }
 

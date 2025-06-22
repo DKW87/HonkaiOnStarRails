@@ -1,7 +1,6 @@
 package com.github.dkw87.honkaionstarrails.service;
 
 import com.github.dkw87.honkaionstarrails.service.enumeration.GameState;
-import com.github.dkw87.honkaionstarrails.shared.utility.dev.AOBScannerUtil;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import lombok.Getter;
@@ -19,11 +18,11 @@ public class GameStateService {
     private static final int NORMAL_POLL = 500;
     private static final int FAST_POLL = 100;
 
-    @Getter
     private final KeyInputService keyInputService;
     private final Label stateLabel;
     private final GameMonitorService gameMonitorService;
     private final CombatMonitorService combatMonitorService;
+    private final DataManagerService dataManagerService;
 
     private volatile boolean shutdownRequested;
     private GameState previousGameState;
@@ -32,7 +31,8 @@ public class GameStateService {
         LOGGER.info("Initializing GameStateService...");
         stateLabel = statusLabel;
         this.gameMonitorService = new GameMonitorService();
-        this.keyInputService = new KeyInputService();
+        this.keyInputService = KeyInputService.getInstance();
+        this.dataManagerService = new DataManagerService();
         this.combatMonitorService = new CombatMonitorService();
         keyInputService.initialize();
         startMonitoring();
@@ -48,7 +48,6 @@ public class GameStateService {
         Thread monitoringThread = new Thread(() -> {
             while (!shutdownRequested) {
                 try {
-                    // Your existing logic from createTask().call()
                     GameState newState;
 
                     if (!gameMonitorService.isGameRunning()) {
@@ -57,7 +56,7 @@ public class GameStateService {
                     } else if (gameMonitorService.isGameFocused()) {
                         if (combatMonitorService.runMonitor()) {
                             newState = setGameState(GameState.EXECUTING);
-                            AOBScannerUtil.scanForPattern();
+                            dataManagerService.notifyGameIsInCombat();
                         } else {
                             newState = setGameState(GameState.IDLE);
                         }

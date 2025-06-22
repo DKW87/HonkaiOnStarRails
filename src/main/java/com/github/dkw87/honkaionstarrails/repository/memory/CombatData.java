@@ -14,7 +14,6 @@ public class CombatData {
     private volatile int currentSkillpoints;
     private volatile int turn;
     private volatile BufferedImage currentTurnImage;
-    private volatile int lastAnalyzedTurn;
 
     private CombatData() {}
 

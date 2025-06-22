@@ -27,11 +27,9 @@ public class MemoryReadingService {
     private int processId;
     private Map<String, Long> moduleBaseAddresses = new HashMap<>();
 
-    public MemoryReadingService() {
-        // Process handle will be initialized when game is detected
-    }
+    private MemoryReadingService() {}
 
-    public boolean initialize() {
+    protected boolean initialize() {
         LOGGER.info("Initializing MemoryReadingService...");
         if (GameMonitorService.gameWindow == null) {
             LOGGER.warn("Game window not found");
@@ -72,7 +70,7 @@ public class MemoryReadingService {
         return true;
     }
 
-    private boolean findModuleBaseAddress() {
+    protected boolean findModuleBaseAddress() {
         // Enumerate modules
         WinDef.HMODULE[] hModules = new WinDef.HMODULE[1024];
         IntByReference lpcbNeeded = new IntByReference();
@@ -129,7 +127,7 @@ public class MemoryReadingService {
         return false;
     }
 
-    public int getSkillPoints() {
+    protected int getSkillPoints() {
         if (!isInitialized()) return -1;
 
         Long gameModuleBase = moduleBaseAddresses.get(MemoryConst.GAME_ASSEMBLY_MODULE);
@@ -145,7 +143,7 @@ public class MemoryReadingService {
         return followPTRChain(address, CombatPtrChains.SKILLPOINTS);
     }
 
-    public int followPTRChain(Long address, int[] ptrChain) {
+    protected int followPTRChain(Long address, int[] ptrChain) {
         if (address == 0) return -1;
 
         for (int i = 0; i < ptrChain.length; i++) {
@@ -164,7 +162,7 @@ public class MemoryReadingService {
         return -1;
     }
 
-    public byte readByteFromAddress(long address) {
+    protected byte readByteFromAddress(long address) {
         Memory buffer = new Memory(1);
         boolean success = Kernel32.INSTANCE.ReadProcessMemory(
                 processHandle,
@@ -183,7 +181,7 @@ public class MemoryReadingService {
         return buffer.getByte(0);
     }
 
-    public int readIntFromAddress(long address) {
+    protected int readIntFromAddress(long address) {
         Memory buffer = new Memory(4);
         boolean success = Kernel32.INSTANCE.ReadProcessMemory(
                 processHandle,
@@ -202,7 +200,7 @@ public class MemoryReadingService {
         return buffer.getInt(0);
     }
 
-    public long readLongFromAddress(long address) {
+    protected long readLongFromAddress(long address) {
         Memory buffer = new Memory(8);
         boolean success = Kernel32.INSTANCE.ReadProcessMemory(
                 processHandle,
@@ -221,14 +219,14 @@ public class MemoryReadingService {
         return buffer.getLong(0);
     }
 
-    public boolean isInitialized() {
+    protected boolean isInitialized() {
         if (processHandle == null || moduleBaseAddresses.isEmpty()) {
             return initialize();
         }
         return true;
     }
 
-    public boolean gameModuleExists(Long gameModuleBase) {
+    protected boolean gameModuleExists(Long gameModuleBase) {
         if (gameModuleBase == null) {
             LOGGER.error("Game module base address not found");
             return false;
@@ -236,7 +234,7 @@ public class MemoryReadingService {
         return true;
     }
 
-    public void cleanup() {
+    protected void cleanup() {
         if (processHandle != null) {
             LOGGER.info("Cleaning up process handle: {}", processHandle);
             Kernel32.INSTANCE.CloseHandle(processHandle);
@@ -244,8 +242,16 @@ public class MemoryReadingService {
         }
     }
     
-    public Long getModuleBaseAddresses(String module) {
+    protected Long getModuleBaseAddresses(String module) {
         return moduleBaseAddresses.get(module);
+    }
+
+    public static MemoryReadingService getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+
+    private static class SingletonHolder {
+        private static final MemoryReadingService INSTANCE = new MemoryReadingService();
     }
     
 }
