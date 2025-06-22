@@ -17,11 +17,11 @@ public class ScreenshotService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScreenshotService.class);
     private final File screenshotsFolder;
 
-    public ScreenshotService() {
+    private ScreenshotService() {
         screenshotsFolder = new File("screenshots");
     }
 
-    public BufferedImage takeScreenshot() {
+    protected BufferedImage takeScreenshot() {
         try {
             LOGGER.debug("Taking screenshot...");
 
@@ -35,7 +35,7 @@ public class ScreenshotService {
         return null;
     }
 
-    public void saveImage(BufferedImage image, String fileName) {
+    protected void saveImage(BufferedImage image, String fileName) {
         if (image == null) {
             LOGGER.error("Image is null");
             return;
@@ -47,12 +47,23 @@ public class ScreenshotService {
             screenshotsFolder.mkdirs();
         }
 
+        String extension = ".png";
+        fileName = fileName + extension;
+
         try {
             File outputFile = new File(screenshotsFolder, fileName);
-            ImageIO.write(image, "png", outputFile);
+            ImageIO.write(image, extension.replace(".", ""), outputFile);
         } catch (IOException e) {
             LOGGER.error("Failed to save screenshot: {}", e.getMessage());
         }
+    }
+
+    public static ScreenshotService getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+
+    private static class SingletonHolder {
+        private static final ScreenshotService INSTANCE = new ScreenshotService();
     }
 
 }
