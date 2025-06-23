@@ -93,21 +93,17 @@ public class DataManagerService {
     }
 
     private void updateCombatData() {
-        if (combatData.getTurn() > 1) {
-            // to flush/clear the buffer and prevent memory from increasing too rapidly
-            BufferedImage oldImage = combatData.getCurrentTurnImage();
-            oldImage.flush();
-            combatData.setCurrentTurnImage(null);
-        }
+        storeOffsets();
+        threadSleep(50);
         combatData.setCurrentTurnImage(screenshotService.takeScreenshot());
         screenshotService.saveImage(combatData.getCurrentTurnImage(), String.format("turn_%d", combatData.getTurn()));
-        storeOffsets();
         LOGGER.debug("Turn {} succesfully analyzed!", combatData.getTurn());
         LOGGER.debug("Took and saved screenshot.");
         LOGGER.debug("Amount of enemies this turn: {}.", combatData.getAmountOfEnemies());
         LOGGER.debug("Amount of skill points this turn: {}.", combatData.getCurrentSkillpoints());
         LOGGER.debug("Waiting for next turn to start analyzing again.");
         lastAnalyzedTurn = combatData.getTurn();
+        combatData.getCurrentTurnImage().flush();
     }
 
     private void storeOffsets() {
@@ -118,6 +114,14 @@ public class DataManagerService {
     private int readFromGameMemory(long offset, int[] ptrChain) {
         long address = memoryReadingService.readLongFromAddress(gameassemblyModule + offset);
         return memoryReadingService.followPTRChain(address, ptrChain);
+    }
+
+    private void threadSleep(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            LOGGER.error("Thread sleep interrupted");
+        }
     }
 
 }
