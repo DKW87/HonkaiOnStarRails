@@ -7,8 +7,6 @@ import com.github.dkw87.honkaionstarrails.service.constant.offset.CombatOffsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.image.BufferedImage;
-
 public class DataManagerService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataManagerService.class);
@@ -81,11 +79,7 @@ public class DataManagerService {
 
     private void readUpdateTurnInformation() {
         gameassemblyModule = memoryReadingService.getModuleBaseAddresses(MemoryConst.GAME_ASSEMBLY_MODULE);
-
-        long turnAddress = memoryReadingService.readLongFromAddress(gameassemblyModule + CombatOffsets.TURN_COUNTER);
-        int turnResult = memoryReadingService.followPTRChain(turnAddress, CombatPtrChains.TURN_COUNTER);
-
-        combatData.setTurn(turnResult);
+        combatData.setTurn(readFromGameMemory(CombatOffsets.TURN_COUNTER, CombatPtrChains.TURN_COUNTER));
     }
 
     private boolean newTurnToAnalyzeIsAvailable() {
