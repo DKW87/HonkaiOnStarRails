@@ -10,6 +10,9 @@
     <name>HonkaiOnStarRails</name>
 
     <properties>
+        <!-- Automated testing -->
+        <junit.version>5.13.1</junit.version>
+
         <!-- Build -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <source.version>21</source.version>
@@ -17,27 +20,27 @@
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
         <javafx-maven-plugin.version>0.0.8</javafx-maven-plugin.version>
 
-        <!-- Maintainability -->
-        <lombok.version>1.18.38</lombok.version>
-
-        <!-- Automated testing -->
-        <junit.version>5.13.1</junit.version>
-
         <!-- JavaFX -->
         <javafx-controls.version>21.0.7</javafx-controls.version>
         <javafx-fxml.version>21.0.7</javafx-fxml.version>
         <controlsfx.version>11.2.2</controlsfx.version>
 
+        <!-- Logging  -->
+        <slf4j-api.version>2.0.17</slf4j-api.version>
+        <log4j-slf4j-impl.version>2.25.0</log4j-slf4j-impl.version>
+
+        <!-- Maintainability -->
+        <lombok.version>1.18.38</lombok.version>
+
+        <!-- Optical Character Recognition (OCR) -->
+        <tess4j.version>5.16.0</tess4j.version>
+
+        <!-- Virtual keyboard presses -->
+        <jnativehook.version>2.2.2</jnativehook.version>
+
         <!-- Windows API -->
         <jna.version>5.17.0</jna.version>
         <jna-platform.version>5.17.0</jna-platform.version>
-
-        <!-- virtual keyboard presses -->
-        <jnativehook.version>2.2.2</jnativehook.version>
-
-        <!-- logging  -->
-        <slf4j-api.version>2.0.17</slf4j-api.version>
-        <log4j-slf4j-impl.version>2.25.0</log4j-slf4j-impl.version>
     </properties>
 
     <dependencies>
@@ -97,6 +100,11 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.tess4j</groupId>
+            <artifactId>tess4j</artifactId>
+            <version>${tess4j.version}</version>
         </dependency>
     </dependencies>
 
