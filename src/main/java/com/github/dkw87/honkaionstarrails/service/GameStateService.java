@@ -60,7 +60,6 @@ public class GameStateService {
                             newState = setGameState(GameState.IDLE);
                         }
                     } else {
-                        combatMonitorService.getMemoryReadingService().cleanup();
                         newState = setGameState(GameState.FOUND);
                     }
 
