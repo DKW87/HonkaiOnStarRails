@@ -32,6 +32,16 @@ public class OCRService {
         }
     }
 
+    protected String getTextFromImage(BufferedImage image) {
+        try {
+            LOGGER.debug("Performing OCR on image...");
+            return tesseract.doOCR(image).toLowerCase();
+        } catch (TesseractException e) {
+            LOGGER.error("Tesseract exception: ", e);
+            return null;
+        }
+    }
+
     public static OCRService getInstance() {
         return SingletonHolder.INSTANCE;
     }
