@@ -1,7 +1,7 @@
 # Honkai On Star Rails 
 
 ## ⚠️ PLEASE READ THIS DISCLAIMER ⚠️
-**USE THIS APPLICATION AT YOUR OWN RISK**. This application automates gameplay by reading game memory and simulating keyboard inputs, which may violate the Terms of Service of Honkai: Star Rail. Using this application could potentially result in your account being suspended or permanently banned. Always be cautious using this application with newer versions of the game. I take NO RESPONSIBILITY for any consequences resulting from the use of this application.      
+**USE THIS APPLICATION AT YOUR OWN RISK**. This application automates gameplay by reading game memory, reading screen information and simulating keyboard inputs, which may violate the Terms of Service of Honkai: Star Rail. Using this application could potentially result in your account being suspended or permanently banned. Always be cautious using this application with newer versions of the game. I take NO RESPONSIBILITY for any consequences resulting from the use of this application.      
 
 <p align="center">
   <img src="src/main/resources/com/github/dkw87/honkaionstarrails/image/hosr_logo.png" alt="HOSR Logo">
@@ -16,9 +16,11 @@
 
 - detect when the game is running and in focus;
 - monitor combat state through reading the game's memory;
-- identify when combat begins, pauses, or when the real-time combat viewer is open;
 - automatically adjust polling rates based on game state for efficiency;
-- able to send keypresses.
+- identify when combat begins and ends through reading memory;
+- memory reads key information like: which turn, how many enemies, amount of skill points, etc. 
+- screen reads key information like: character health, ultimate charge, player or enemy turn, etc.
+- able to send keypresses that are accepted as input by the game.
 
 ### Features to be implemented for release version 1.0
 
@@ -49,5 +51,5 @@
 ### Compiling requires
 - [Java LTS 21](https://adoptium.net/temurin/releases/);
 - [JavaFX LTS 21](https://gluonhq.com/products/javafx/openjfx-21-release-notes/);
-- uses trained data files from [tessdata_fast](https://github.com/tesseract-ocr/tessdata_fast) ;
+- Create a folder in root "tesseract-data" and put [tessdata_fast](https://github.com/tesseract-ocr/tessdata_fast) here;
 - run your IDE with **administrator privileges**.

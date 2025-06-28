@@ -3,8 +3,7 @@ package com.github.dkw87.honkaionstarrails.service;
 import com.github.dkw87.honkaionstarrails.service.constant.offset.CombatOffsets;
 import com.github.dkw87.honkaionstarrails.service.constant.chain.CombatPtrChains;
 import com.github.dkw87.honkaionstarrails.service.constant.MemoryConst;
-import com.github.dkw87.honkaionstarrails.service.win32interface.PsapiExtended;
-import com.github.dkw87.honkaionstarrails.service.win32interface.User32Extended;
+import com.github.dkw87.honkaionstarrails.service.extendedinterface.User32Extended;
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
@@ -75,7 +74,7 @@ public class MemoryReadingService {
         WinDef.HMODULE[] hModules = new WinDef.HMODULE[1024];
         IntByReference lpcbNeeded = new IntByReference();
 
-        boolean enumSuccess = PsapiExtended.INSTANCE.EnumProcessModules(
+        boolean enumSuccess = Psapi.INSTANCE.EnumProcessModules(
                 processHandle,
                 hModules,
                 hModules.length * Native.getNativeSize(WinDef.HMODULE.class),
@@ -98,7 +97,7 @@ public class MemoryReadingService {
         for (int i = 0; i < modulesCount; i++) {
             try {
                 Psapi.MODULEINFO info = new Psapi.MODULEINFO();
-                boolean success = PsapiExtended.INSTANCE.GetModuleInformation(
+                boolean success = Psapi.INSTANCE.GetModuleInformation(
                         processHandle,
                         hModules[i],
                         info,
