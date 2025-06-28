@@ -64,21 +64,21 @@ public class CombatMonitorService {
     }
 
     public void isCombatPaused() {
-        Long gameAssemblyModule = getModuleBaseAddress(MemoryConst.GAME_ASSEMBLY_MODULE);
-        if (moduleNotFound(gameAssemblyModule)) return;
-
-        byte isPaused = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_PAUSED);
-
-        isCombatPaused = (isPaused == 1);
+//        Long gameAssemblyModule = getModuleBaseAddress(MemoryConst.GAME_ASSEMBLY_MODULE);
+//        if (moduleNotFound(gameAssemblyModule)) return;
+//
+//        byte isPaused = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_PAUSED);
+//
+//        isCombatPaused = (isPaused == 1);
     }
 
     public void isCombatViewOpen() {
-        Long gameAssemblyModule = getModuleBaseAddress(MemoryConst.GAME_ASSEMBLY_MODULE);
-        if (moduleNotFound(gameAssemblyModule)) return;
-
-        byte isOpen = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_VIEW_OPEN);
-
-        isCombatViewOpen = (isOpen == 1);
+//        Long gameAssemblyModule = getModuleBaseAddress(MemoryConst.GAME_ASSEMBLY_MODULE);
+//        if (moduleNotFound(gameAssemblyModule)) return;
+//
+//        byte isOpen = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_VIEW_OPEN);
+//
+//        isCombatViewOpen = (isOpen == 1);
     }
 
     private Long getModuleBaseAddress(String module) {

@@ -1,4 +1,4 @@
-package com.github.dkw87.honkaionstarrails.service.win32interface;
+package com.github.dkw87.honkaionstarrails.service.extendedinterface;
 
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
