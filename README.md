@@ -49,5 +49,5 @@
 ### Compiling requires
 - [Java LTS 21](https://adoptium.net/temurin/releases/);
 - [JavaFX LTS 21](https://gluonhq.com/products/javafx/openjfx-21-release-notes/);
-- uses trained data files from [tessdata_fast](https://github.com/tesseract-ocr/tessdata_fast) ;
+- Create a folder in root "tesseract-data" and put [tessdata_fast](https://github.com/tesseract-ocr/tessdata_fast) here;
 - run your IDE with **administrator privileges**.
