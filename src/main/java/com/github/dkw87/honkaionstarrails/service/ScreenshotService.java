@@ -21,14 +21,14 @@ public class ScreenshotService {
         screenshotsFolder = new File("screenshots");
     }
 
-    protected BufferedImage takeScreenshot() {
+    protected BufferedImage takeScreenshot(Rectangle region) {
         try {
             LOGGER.debug("Taking screenshot...");
 
             Robot robot = new Robot();
             Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
 
-            return robot.createScreenCapture(screenRect);
+            return region != null ? robot.createScreenCapture(region) : robot.createScreenCapture(screenRect);
         } catch (AWTException e) {
             LOGGER.error("Failed to create Robot: {}", e.getMessage());
         }

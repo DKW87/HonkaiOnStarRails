@@ -4,10 +4,12 @@ import com.github.dkw87.honkaionstarrails.repository.memory.CombatData;
 import com.github.dkw87.honkaionstarrails.service.constant.MemoryConst;
 import com.github.dkw87.honkaionstarrails.service.constant.chain.CombatPtrChains;
 import com.github.dkw87.honkaionstarrails.service.constant.offset.CombatOffsets;
+
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.awt.image.BufferedImage;
 
 public class DataManagerService {
 
@@ -17,17 +19,21 @@ public class DataManagerService {
     private final CombatData combatData;
     private final MemoryReadingService memoryReadingService;
     private final ScreenshotService screenshotService;
+    private final OCRService ocrService;
 
     private volatile boolean shutdownRequested;
 
     private int lastAnalyzedTurn;
     private Long gameassemblyModule;
+    private Rectangle enemyTurnLabelLocation;
 
     public DataManagerService() {
         LOGGER.info("Initializing DataManagerService...");
         combatData = CombatData.getInstance();
         memoryReadingService = MemoryReadingService.getInstance();
         screenshotService = ScreenshotService.getInstance();
+        ocrService = OCRService.getInstance();
+        enemyTurnLabelLocation = new Rectangle(1773, 1045, 255, 35);
         startManaging();
     }
 
@@ -44,6 +50,7 @@ public class DataManagerService {
             while (!shutdownRequested) {
                 try {
                     while (!gameIsInCombat() && !shutdownRequested) {
+                        resetOnEndCombat();
                         synchronized (workSignal) {
                             workSignal.wait();
                         }
@@ -56,8 +63,10 @@ public class DataManagerService {
                         }
                     }
 
-                    LOGGER.debug("Analyzing turn {}", combatData.getTurn());
-                    updateCombatData();
+                    if (gameIsInCombat() && newTurnToAnalyzeIsAvailable() && !shutdownRequested) {
+                        LOGGER.debug("Analyzing turn {}", combatData.getTurn());
+                        updateCombatData();
+                    }
 
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -69,7 +78,11 @@ public class DataManagerService {
         managingThread.start();
     }
 
-    public void notifyGameIsInCombat() {
+    private void resetOnEndCombat() {
+        lastAnalyzedTurn = 0;
+    }
+
+    public void notifyOfWork() {
         synchronized (workSignal) {
             workSignal.notify();
         }
@@ -81,11 +94,7 @@ public class DataManagerService {
 
     private void readUpdateTurnInformation() {
         gameassemblyModule = memoryReadingService.getModuleBaseAddresses(MemoryConst.GAME_ASSEMBLY_MODULE);
-
-        long turnAddress = memoryReadingService.readLongFromAddress(gameassemblyModule + CombatOffsets.TURN_COUNTER);
-        int turnResult = memoryReadingService.followPTRChain(turnAddress, CombatPtrChains.TURN_COUNTER);
-
-        combatData.setTurn(turnResult);
+        combatData.setTurn(readFromGameMemory(CombatOffsets.TURN_COUNTER, CombatPtrChains.TURN_COUNTER));
     }
 
     private boolean newTurnToAnalyzeIsAvailable() {
@@ -93,21 +102,20 @@ public class DataManagerService {
     }
 
     private void updateCombatData() {
-        if (combatData.getTurn() > 1) {
-            // to flush/clear the buffer and prevent memory from increasing too rapidly
-            BufferedImage oldImage = combatData.getCurrentTurnImage();
-            oldImage.flush();
-            combatData.setCurrentTurnImage(null);
-        }
-        combatData.setCurrentTurnImage(screenshotService.takeScreenshot());
-        screenshotService.saveImage(combatData.getCurrentTurnImage(), String.format("turn_%d", combatData.getTurn()));
         storeOffsets();
+//        threadSleep(50);
+//        combatData.setCurrentTurnImage(screenshotService.takeScreenshot(null));
+//        screenshotService.saveImage(combatData.getCurrentTurnImage(), String.format("turn_%d", combatData.getTurn()));
+        boolean enemyTurn = isEnemyTurn();
+
         LOGGER.debug("Turn {} succesfully analyzed!", combatData.getTurn());
-        LOGGER.debug("Took and saved screenshot.");
+//        LOGGER.debug("Took and saved screenshot.");
+        LOGGER.debug("Who's turn: {}", (enemyTurn ? "Enemy" : "Player"));
         LOGGER.debug("Amount of enemies this turn: {}.", combatData.getAmountOfEnemies());
         LOGGER.debug("Amount of skill points this turn: {}.", combatData.getCurrentSkillpoints());
         LOGGER.debug("Waiting for next turn to start analyzing again.");
         lastAnalyzedTurn = combatData.getTurn();
+//        combatData.getCurrentTurnImage().flush();
     }
 
     private void storeOffsets() {
@@ -118,6 +126,20 @@ public class DataManagerService {
     private int readFromGameMemory(long offset, int[] ptrChain) {
         long address = memoryReadingService.readLongFromAddress(gameassemblyModule + offset);
         return memoryReadingService.followPTRChain(address, ptrChain);
+    }
+
+    private void threadSleep(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            LOGGER.error("Thread sleep interrupted");
+        }
+    }
+
+    private boolean isEnemyTurn() {
+        String textToContain = "enemy's turn";
+        BufferedImage imageRegionToSearch = screenshotService.takeScreenshot(enemyTurnLabelLocation);
+        return ocrService.doesImageContainText(textToContain, imageRegionToSearch);
     }
 
 }

@@ -8,6 +8,7 @@ module com.github.dkw87.honkaionstarrails {
     requires java.desktop;
     requires com.github.kwhat.jnativehook;
     requires org.slf4j;
+    requires tess4j;
     requires static lombok;
 
     exports com.github.dkw87.honkaionstarrails;

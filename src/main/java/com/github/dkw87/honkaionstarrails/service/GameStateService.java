@@ -3,7 +3,6 @@ package com.github.dkw87.honkaionstarrails.service;
 import com.github.dkw87.honkaionstarrails.service.enumeration.GameState;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
-import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,9 +53,9 @@ public class GameStateService {
                         combatMonitorService.getMemoryReadingService().cleanup();
                         newState = setGameState(GameState.NOT_FOUND);
                     } else if (gameMonitorService.isGameFocused()) {
+                        dataManagerService.notifyOfWork();
                         if (combatMonitorService.runMonitor()) {
                             newState = setGameState(GameState.EXECUTING);
-                            dataManagerService.notifyGameIsInCombat();
                         } else {
                             newState = setGameState(GameState.IDLE);
                         }
