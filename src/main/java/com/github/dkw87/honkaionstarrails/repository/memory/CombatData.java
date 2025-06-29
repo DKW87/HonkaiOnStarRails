@@ -17,6 +17,12 @@ public class CombatData {
     private volatile int turn;
     private volatile BufferedImage currentTurnImage;
 
+    // character specific
+    private volatile int charOneCurrentHealth;
+    private volatile int charTwoCurrentHealth;
+    private volatile int charThreeCurrentHealth;
+    private volatile int charFourCurrentHealth;
+
     private CombatData() {}
 
     public static CombatData getInstance() {
