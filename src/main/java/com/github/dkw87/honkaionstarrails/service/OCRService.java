@@ -18,13 +18,14 @@ public class OCRService {
         tesseract = new Tesseract();
         tesseract.setLanguage("eng");
         tesseract.setDatapath("tesseract-data");
-        tesseract.setVariable("user_defined_dpi", "100");
+        tesseract.setVariable("user_defined_dpi", "150");
     }
 
     protected boolean doesImageContainText(String text, BufferedImage image) {
         try {
             LOGGER.debug("Performing OCR for text: {}...", text);
             String readString = tesseract.doOCR(image).toLowerCase();
+            LOGGER.debug("OCR returned: {}", readString);
             return readString.contains(text);
         } catch (TesseractException e) {
             LOGGER.error("Tesseract exception: ", e);
@@ -35,7 +36,9 @@ public class OCRService {
     protected String getTextFromImage(BufferedImage image) {
         try {
             LOGGER.debug("Performing OCR on image...");
-            return tesseract.doOCR(image).toLowerCase();
+            String result = tesseract.doOCR(image).toLowerCase();
+            LOGGER.debug("OCR returned: {}", result);
+            return result;
         } catch (TesseractException e) {
             LOGGER.error("Tesseract exception: ", e);
             return null;
