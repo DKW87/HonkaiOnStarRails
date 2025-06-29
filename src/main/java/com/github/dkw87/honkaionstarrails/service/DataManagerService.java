@@ -18,6 +18,10 @@ public class DataManagerService {
     private final Object workSignal = new Object();
     private final Rectangle enemyTurnLabelLocation;
     private final Rectangle waveCounterLocation;
+    private final Rectangle charOneHealthLocation;
+    private final Rectangle charTwoHealthLocation;
+    private final Rectangle charThreeHealthLocation;
+    private final Rectangle charFourHealthLocation;
     private final CombatData combatData;
     private final MemoryReadingService memoryReadingService;
     private final ScreenshotService screenshotService;
@@ -36,6 +40,10 @@ public class DataManagerService {
         ocrService = OCRService.getInstance();
         enemyTurnLabelLocation = new Rectangle(1773, 1045, 255, 35);
         waveCounterLocation = new Rectangle(100, 13, 50, 25);
+        charOneHealthLocation = new Rectangle(266, 1007, 80, 22);
+        charTwoHealthLocation = new Rectangle(507, 1007, 80, 22);
+        charThreeHealthLocation = new Rectangle(749, 1007, 80, 22);
+        charFourHealthLocation = new Rectangle(990, 1007, 80, 22);
         startManaging();
     }
 
@@ -104,22 +112,49 @@ public class DataManagerService {
     }
 
     private void updateCombatData() {
+        long startTime = System.currentTimeMillis();
         storeOffsets();
 //        threadSleep(50);
 //        combatData.setCurrentTurnImage(screenshotService.takeScreenshot(null));
 //        screenshotService.saveImage(combatData.getCurrentTurnImage(), String.format("turn_%d", combatData.getTurn()));
-        boolean enemyTurn = isEnemyTurn();
         storeWaveCounter();
-
-        LOGGER.debug("Turn {} succesfully analyzed!", combatData.getTurn());
+        boolean enemyTurn = isEnemyTurn();
+        storeCharacterVitals();
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        LOGGER.debug("Turn {} succesfully analyzed in {}MS!", combatData.getTurn(), elapsedTime);
 //        LOGGER.debug("Took and saved screenshot.");
-        LOGGER.debug("Wave {}/{}", combatData.getCurrentWave(), combatData.getTotalWaves());
-        LOGGER.debug("Whos turn: {}", (enemyTurn ? "Enemy" : "Player"));
-        LOGGER.debug("Amount of enemies this turn: {}.", combatData.getAmountOfEnemies());
-        LOGGER.debug("Amount of skill points this turn: {}.", combatData.getCurrentSkillpoints());
-        LOGGER.debug("Waiting for next turn to start analyzing again.");
+        LOGGER.debug("!Generating report!");
+        LOGGER.debug("*** Combat Information ***");
+        LOGGER.debug("* Wave {}/{}", combatData.getCurrentWave(), combatData.getTotalWaves());
+        LOGGER.debug("* Whos turn: {}", (enemyTurn ? "Enemy" : "Player"));
+        LOGGER.debug("* Amount of enemies this turn: {}.", combatData.getAmountOfEnemies());
+        LOGGER.debug("* Amount of skill points this turn: {}.", combatData.getCurrentSkillpoints());
+        LOGGER.debug("*** Character Information ***");
+        LOGGER.debug("* Character one current health: {}", combatData.getCharOneCurrentHealth());
+        LOGGER.debug("* Character two current health: {}", combatData.getCharTwoCurrentHealth());
+        LOGGER.debug("* Character three current health: {}", combatData.getCharThreeCurrentHealth());
+        LOGGER.debug("* Character four current health: {}", combatData.getCharFourCurrentHealth());
+        LOGGER.debug("!End of report!");
+        LOGGER.debug("Waiting for next turn to start analyzing again...");
         lastAnalyzedTurn = combatData.getTurn();
 //        combatData.getCurrentTurnImage().flush();
+    }
+
+    private void storeCharacterVitals() {
+        BufferedImage charOneHealthImage = screenshotService.takeScreenshot(charOneHealthLocation);
+        BufferedImage charTwoHealthImage = screenshotService.takeScreenshot(charTwoHealthLocation);
+        BufferedImage charThreeHealthImage = screenshotService.takeScreenshot(charThreeHealthLocation);
+        BufferedImage charFourHealthImage = screenshotService.takeScreenshot(charFourHealthLocation);
+
+        String charOneHealth = sanitizeToKeepNumbers(ocrService.getTextFromImage(charOneHealthImage));
+        String charTwoHealth = sanitizeToKeepNumbers(ocrService.getTextFromImage(charTwoHealthImage));
+        String charThreeHealth = sanitizeToKeepNumbers(ocrService.getTextFromImage(charThreeHealthImage));
+        String charFourHealth = sanitizeToKeepNumbers(ocrService.getTextFromImage(charFourHealthImage));
+
+        combatData.setCharOneCurrentHealth(Integer.parseInt(charOneHealth));
+        combatData.setCharTwoCurrentHealth(Integer.parseInt(charTwoHealth));
+        combatData.setCharThreeCurrentHealth(Integer.parseInt(charThreeHealth));
+        combatData.setCharFourCurrentHealth(Integer.parseInt(charFourHealth));
     }
 
     private void storeOffsets() {
@@ -152,6 +187,10 @@ public class DataManagerService {
 
         combatData.setCurrentWave(Character.getNumericValue(waveInfo.charAt(0)));
         combatData.setTotalWaves(Character.getNumericValue(waveInfo.charAt(2)));
+    }
+
+    private String sanitizeToKeepNumbers(String text) {
+        return text.replaceAll("[^0-9]", "").trim();
     }
 
 }
