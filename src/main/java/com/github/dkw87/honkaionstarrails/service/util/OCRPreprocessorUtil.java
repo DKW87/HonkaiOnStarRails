@@ -2,14 +2,27 @@ package com.github.dkw87.honkaionstarrails.service.util;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.Kernel;
+import java.awt.image.ConvolveOp;
 import java.awt.Image;
 
 public class OCRPreprocessorUtil {
 
     public static BufferedImage preprocessForOCR(BufferedImage original) {
         BufferedImage gray = toGrayscale(original);
-        BufferedImage thresholded = applyThreshold(gray);
-        return upscale(thresholded, 2);
+        return upscale(gray, 2);
+    }
+
+    public static BufferedImage sharpenImage(BufferedImage img) {
+        float[] sharpeningKernel = {
+                0, -1, 0,
+                -1, 5, -1,
+                0, -1, 0
+        };
+
+        Kernel kernel = new Kernel(3, 3, sharpeningKernel);
+        ConvolveOp convolveOp = new ConvolveOp(kernel);
+        return convolveOp.filter(img, null);
     }
 
     public static BufferedImage toGrayscale(BufferedImage img) {
