@@ -6,6 +6,10 @@ import java.awt.image.Kernel;
 import java.awt.image.ConvolveOp;
 import java.awt.Image;
 
+/**
+ * Preprocessing util service to enhance the screengrabs to make
+ * them more suitable for OCR and get a more accurate response.
+ */
 public class OCRPreprocessorUtil {
 
     public static BufferedImage preprocessForOCR(BufferedImage original) {
