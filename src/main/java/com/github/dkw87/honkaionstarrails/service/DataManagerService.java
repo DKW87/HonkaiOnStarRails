@@ -12,6 +12,12 @@ import com.github.dkw87.honkaionstarrails.service.util.OCRPreprocessorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Used primarily to get, process and store all combat related data.
+ * Works on a separate thread 'DataManagerService Thread'.
+ * Is notified of work by the GameStateService.
+ * TODO: Class is getting too big and needs refactoring
+ */
 public class DataManagerService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataManagerService.class);
