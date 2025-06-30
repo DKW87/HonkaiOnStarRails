@@ -3,6 +3,12 @@ package com.github.dkw87.honkaionstarrails.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Makes sure all traces of this program are removed from memory to avoid being flagged
+ * by any anti-cheat software program (when not using this for HSR).
+ * The shutdown hook in the JVM should ensure these are being properly cleaned up
+ * in the event the program crashes or is force closed by the user.
+ */
 public class CleanupService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CleanupService.class);
