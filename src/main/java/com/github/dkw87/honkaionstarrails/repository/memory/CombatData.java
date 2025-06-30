@@ -5,6 +5,12 @@ import lombok.Setter;
 
 import java.awt.image.BufferedImage;
 
+/**
+ * Memory repository that contains all combat variables and data
+ * that can be accessed, written to and read from by all threads.
+ * Besides inCombat which is managed by CombatMonitorService,
+ * DataManagerService writes all other variables.
+ */
 @Getter
 @Setter
 public class CombatData {
