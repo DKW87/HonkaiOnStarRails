@@ -8,6 +8,12 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Class is only executed by GameStateService to report whether
+ * HSR is in combat, paused or combat view is open (effectively paused).
+ * This will only run once the game is in focus. Uses MemoryReadingService
+ * to read these flags.
+ */
 public class CombatMonitorService {
 
     public static volatile boolean isInCombat;

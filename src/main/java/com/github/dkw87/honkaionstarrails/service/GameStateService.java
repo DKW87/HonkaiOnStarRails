@@ -6,6 +6,15 @@ import javafx.scene.control.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Sole purpose of this class is to regulate the flow of HoSR,
+ * constantly checking what state the game is in right now and
+ * what follow-up actions should come from that. Dynamically polls
+ * based on game state and runs on its own thread
+ * 'GameStateService Thread'. As the first thread to run and
+ * that is always running, it is responsible to shut down
+ * HoSR and call CleanupService and stop other threads.
+ */
 public class GameStateService {
 
     public static volatile GameState gameState;

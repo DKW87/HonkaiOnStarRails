@@ -6,6 +6,10 @@ import com.sun.jna.ptr.IntByReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Sole purposes is to monitor HSR whether the game is running
+ * and whether the game is in focus. Executed by GameStateService.
+ */
 public class GameMonitorService {
 
     public static volatile WinDef.HWND gameWindow = null;
