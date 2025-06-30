@@ -1,5 +1,8 @@
 package com.github.dkw87.honkaionstarrails.service.constant.chain;
 
+/**
+ * The necessary steps to take in order to navigate to the data we need
+ */
 public class CombatPtrChains {
 
     //flags
