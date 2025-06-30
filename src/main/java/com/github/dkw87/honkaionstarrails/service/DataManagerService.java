@@ -8,6 +8,7 @@ import com.github.dkw87.honkaionstarrails.service.constant.offset.CombatOffsets;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
+import com.github.dkw87.honkaionstarrails.service.util.OCRPreprocessorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,10 +41,10 @@ public class DataManagerService {
         ocrService = OCRService.getInstance();
         enemyTurnLabelLocation = new Rectangle(1773, 1045, 255, 35);
         waveCounterLocation = new Rectangle(100, 13, 50, 25);
-        charOneHealthLocation = new Rectangle(266, 1007, 80, 22);
-        charTwoHealthLocation = new Rectangle(507, 1007, 80, 22);
-        charThreeHealthLocation = new Rectangle(749, 1007, 80, 22);
-        charFourHealthLocation = new Rectangle(990, 1007, 80, 22);
+        charOneHealthLocation = new Rectangle(273, 1006, 80, 26);
+        charTwoHealthLocation = new Rectangle(512, 1006, 80, 26);
+        charThreeHealthLocation = new Rectangle(751, 1006, 80, 26);
+        charFourHealthLocation = new Rectangle(992, 1006, 80, 26);
         startManaging();
     }
 
@@ -141,20 +142,25 @@ public class DataManagerService {
     }
 
     private void storeCharacterVitals() {
-        BufferedImage charOneHealthImage = screenshotService.takeScreenshot(charOneHealthLocation);
-        BufferedImage charTwoHealthImage = screenshotService.takeScreenshot(charTwoHealthLocation);
-        BufferedImage charThreeHealthImage = screenshotService.takeScreenshot(charThreeHealthLocation);
-        BufferedImage charFourHealthImage = screenshotService.takeScreenshot(charFourHealthLocation);
+        BufferedImage charOneHealthImage = OCRPreprocessorUtil.preprocessForOCR(screenshotService.takeScreenshot(charOneHealthLocation));
+        BufferedImage charTwoHealthImage = OCRPreprocessorUtil.preprocessForOCR(screenshotService.takeScreenshot(charTwoHealthLocation));
+        BufferedImage charThreeHealthImage = OCRPreprocessorUtil.preprocessForOCR(screenshotService.takeScreenshot(charThreeHealthLocation));
+        BufferedImage charFourHealthImage = OCRPreprocessorUtil.preprocessForOCR(screenshotService.takeScreenshot(charFourHealthLocation));
 
-        String charOneHealth = sanitizeToKeepNumbers(ocrService.getTextFromImage(charOneHealthImage));
-        String charTwoHealth = sanitizeToKeepNumbers(ocrService.getTextFromImage(charTwoHealthImage));
-        String charThreeHealth = sanitizeToKeepNumbers(ocrService.getTextFromImage(charThreeHealthImage));
-        String charFourHealth = sanitizeToKeepNumbers(ocrService.getTextFromImage(charFourHealthImage));
+        screenshotService.saveImage(charOneHealthImage, "charOneHealth");
+        screenshotService.saveImage(charTwoHealthImage, "charTwoHealth");
+        screenshotService.saveImage(charThreeHealthImage, "charThreeHealth");
+        screenshotService.saveImage(charFourHealthImage, "charFourHealth");
 
-        combatData.setCharOneCurrentHealth(Integer.parseInt(charOneHealth));
-        combatData.setCharTwoCurrentHealth(Integer.parseInt(charTwoHealth));
-        combatData.setCharThreeCurrentHealth(Integer.parseInt(charThreeHealth));
-        combatData.setCharFourCurrentHealth(Integer.parseInt(charFourHealth));
+        int charOneHealth = ocrService.scanForOneWordInteger(charOneHealthImage);
+        int charTwoHealth = ocrService.scanForOneWordInteger(charTwoHealthImage);
+        int charThreeHealth = ocrService.scanForOneWordInteger(charThreeHealthImage);
+        int charFourHealth = ocrService.scanForOneWordInteger(charFourHealthImage);
+
+        combatData.setCharOneCurrentHealth(charOneHealth);
+        combatData.setCharTwoCurrentHealth(charTwoHealth);
+        combatData.setCharThreeCurrentHealth(charThreeHealth);
+        combatData.setCharFourCurrentHealth(charFourHealth);
     }
 
     private void storeOffsets() {
@@ -177,20 +183,19 @@ public class DataManagerService {
 
     private boolean isEnemyTurn() {
         String textToFind = "enemy's turn";
-        BufferedImage imageToScan = screenshotService.takeScreenshot(enemyTurnLabelLocation);
-        return ocrService.doesImageContainText(textToFind, imageToScan);
+        BufferedImage imageToScan = OCRPreprocessorUtil.preprocessForOCR(screenshotService.takeScreenshot(enemyTurnLabelLocation));
+        screenshotService.saveImage(imageToScan, "enemyTurn");
+        String ocrResult = ocrService.scanForOneLineString(imageToScan);
+        return ocrResult.equals(textToFind);
     }
 
     private void storeWaveCounter() {
-        BufferedImage imageToScan = screenshotService.takeScreenshot(waveCounterLocation);
-        String waveInfo = ocrService.getTextFromImage(imageToScan);
+        BufferedImage imageToScan = OCRPreprocessorUtil.preprocessForOCR(screenshotService.takeScreenshot(waveCounterLocation));
+        String waveInfo = ocrService.scanForOneLineCounter(imageToScan);
+        screenshotService.saveImage(imageToScan, "waveCounter");
 
         combatData.setCurrentWave(Character.getNumericValue(waveInfo.charAt(0)));
         combatData.setTotalWaves(Character.getNumericValue(waveInfo.charAt(2)));
-    }
-
-    private String sanitizeToKeepNumbers(String text) {
-        return text.replaceAll("[^0-9]", "").trim();
     }
 
 }
