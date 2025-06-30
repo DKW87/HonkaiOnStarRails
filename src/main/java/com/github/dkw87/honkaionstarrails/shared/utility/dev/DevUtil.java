@@ -8,6 +8,9 @@ import java.awt.Point;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Utils for whatever I fancy is beneficial for developing HoSR
+ */
 public class DevUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DevUtil.class);
