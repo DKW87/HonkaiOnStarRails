@@ -42,12 +42,8 @@ public class CombatMonitorService {
     }
 
     public boolean isInCombat() {
-        Long gameAssemblyModule = memoryReadingService.getModuleBaseAddresses(MemoryConst.GAME_ASSEMBLY_MODULE);
-
-        long address = memoryReadingService.readLongFromAddress(gameAssemblyModule + CombatOffsets.IN_COMBAT);
-        int inCombat = memoryReadingService.followPTRChain(address, CombatPtrChains.IN_COMBAT);
-
-        combatData.setInCombat(inCombat == 1);
+        boolean inCombat = MemoryConst.IN_COMBAT.readFromMemory().equals(1);
+        combatData.setInCombat(inCombat);
         return combatData.isInCombat();
     }
 
