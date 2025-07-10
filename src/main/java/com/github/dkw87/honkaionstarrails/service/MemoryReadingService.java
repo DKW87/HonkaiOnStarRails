@@ -242,7 +242,10 @@ public class MemoryReadingService {
     }
     
     public Long getModuleBaseAddresses(String module) {
-        return moduleBaseAddresses.get(module);
+        if (!isInitialized()) return -1L;
+        Long base = moduleBaseAddresses.get(module);
+        if (!gameModuleExists(base)) return -1L;
+        return base;
     }
 
     public static MemoryReadingService getInstance() {

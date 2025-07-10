@@ -42,8 +42,7 @@ public class CombatMonitorService {
     }
 
     public boolean isInCombat() {
-        Long gameAssemblyModule = getModuleBaseAddress(MemoryConst.GAME_ASSEMBLY_MODULE);
-        if (moduleNotFound(gameAssemblyModule)) return false;
+        Long gameAssemblyModule = memoryReadingService.getModuleBaseAddresses(MemoryConst.GAME_ASSEMBLY_MODULE);
 
         long address = memoryReadingService.readLongFromAddress(gameAssemblyModule + CombatOffsets.IN_COMBAT);
         int inCombat = memoryReadingService.followPTRChain(address, CombatPtrChains.IN_COMBAT);
@@ -68,19 +67,6 @@ public class CombatMonitorService {
 //        byte isOpen = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_VIEW_OPEN);
 //
 //        isCombatViewOpen = (isOpen == 1);
-    }
-
-    private Long getModuleBaseAddress(String module) {
-        if (!memoryReadingService.isInitialized()) return -1L;
-        Long moduleBase = memoryReadingService.getModuleBaseAddresses(module);
-        if (!memoryReadingService.gameModuleExists(moduleBase)) return -1L;
-        return moduleBase;
-    }
-
-    private boolean moduleNotFound(Long module) {
-        boolean notFound = (module == -1L);
-        if (notFound) LOGGER.warn("Module base address was not found");
-        return notFound;
     }
 
 }
