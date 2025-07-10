@@ -27,7 +27,7 @@ public class GameMemoryData {
 
     private Object fromOffset() {
         final MemoryReadingService memoryReadingService = MemoryReadingService.getInstance();
-        Long module = memoryReadingService.getModuleBaseAddresses(MEMORY_MODULE);
+        final Long module = memoryReadingService.getModuleBaseAddresses(MEMORY_MODULE);
 
         return switch (this.memoryType) {
             case BYTE -> memoryReadingService.readByteFromAddress(module + this.offset);
@@ -39,7 +39,7 @@ public class GameMemoryData {
     // TODO create module not found and getModuleBaseAddress with validations in memoryreadingService
     private Object withPtrChain() {
         final MemoryReadingService memoryReadingService = MemoryReadingService.getInstance();
-        Long module = memoryReadingService.getModuleBaseAddresses(MEMORY_MODULE);
+        final Long module = memoryReadingService.getModuleBaseAddresses(MEMORY_MODULE);
 
         return switch (this.memoryType) {
             case BYTE -> bytePtrChain(memoryReadingService, module);
@@ -53,7 +53,7 @@ public class GameMemoryData {
     }
 
     private Object intPtrChain(MemoryReadingService memoryReadingService, Long module) {
-        Long address = memoryReadingService.readLongFromAddress(module + this.offset);
+        final Long address = memoryReadingService.readLongFromAddress(module + this.offset);
         return memoryReadingService.followPTRChain(address, this.ptrChain);
     }
 
