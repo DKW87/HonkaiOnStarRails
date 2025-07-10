@@ -36,7 +36,6 @@ public class GameMemoryData {
         };
     }
 
-    // TODO create module not found and getModuleBaseAddress with validations in memoryreadingService
     private Object withPtrChain() {
         final MemoryReadingService memoryReadingService = MemoryReadingService.getInstance();
         final Long module = memoryReadingService.getModuleBaseAddresses(MEMORY_MODULE);
