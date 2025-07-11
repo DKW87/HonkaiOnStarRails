@@ -1,8 +1,6 @@
 package com.github.dkw87.honkaionstarrails.service;
 
-import com.github.dkw87.honkaionstarrails.service.constant.offset.CombatOffsets;
-import com.github.dkw87.honkaionstarrails.service.constant.chain.CombatPtrChains;
-import com.github.dkw87.honkaionstarrails.service.constant.MemoryConst;
+import com.github.dkw87.honkaionstarrails.service.constant.GameMemoryConst;
 import com.github.dkw87.honkaionstarrails.service.extendedinterface.User32Extended;
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
@@ -65,7 +63,7 @@ public class MemoryReadingService {
 
         LOGGER.info("Successfully attached to game process with ID: {}", processId);
         LOGGER.debug("GameAssembly.dll base address: 0x{}",
-                Long.toHexString(moduleBaseAddresses.get(MemoryConst.GAME_ASSEMBLY_MODULE)));
+                Long.toHexString(moduleBaseAddresses.get(GameMemoryConst.GAME_ASSEMBLY_MODULE)));
         return true;
     }
 
@@ -118,7 +116,7 @@ public class MemoryReadingService {
             LOGGER.debug("Found largest module (GameAssembly.dll) at 0x{} size: {}MB",
                     Long.toHexString(largestModuleAddress), (largestModuleSize / (1024 * 1024)));
 
-            moduleBaseAddresses.put(MemoryConst.GAME_ASSEMBLY_MODULE, largestModuleAddress);
+            moduleBaseAddresses.put(GameMemoryConst.GAME_ASSEMBLY_MODULE, largestModuleAddress);
             return true;
         }
 

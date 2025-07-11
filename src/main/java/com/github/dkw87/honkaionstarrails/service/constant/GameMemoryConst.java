@@ -6,7 +6,7 @@ import com.github.dkw87.honkaionstarrails.model.enumeration.MemoryType;
 /**
  * GameAssembly.dll contains all data we read from the game and the anchor is where we hook into it.
  */
-public class MemoryConst {
+public class GameMemoryConst {
 
     public static final String GAME_ASSEMBLY_MODULE = "GameAssembly.dll";
     public static final long ANCHOR = 0x43B4588L;
@@ -27,6 +27,6 @@ public class MemoryConst {
             new GameMemoryData(IN_COMBAT_OFFSET, NULL_PTR_CHAIN, TYPE_BYTE);
 
 
-    private MemoryConst() {}
+    private GameMemoryConst() {}
 
 }

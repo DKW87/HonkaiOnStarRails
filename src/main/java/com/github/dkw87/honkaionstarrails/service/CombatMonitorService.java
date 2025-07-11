@@ -1,9 +1,7 @@
 package com.github.dkw87.honkaionstarrails.service;
 
 import com.github.dkw87.honkaionstarrails.repository.memory.CombatData;
-import com.github.dkw87.honkaionstarrails.service.constant.offset.CombatOffsets;
-import com.github.dkw87.honkaionstarrails.service.constant.chain.CombatPtrChains;
-import com.github.dkw87.honkaionstarrails.service.constant.MemoryConst;
+import com.github.dkw87.honkaionstarrails.service.constant.GameMemoryConst;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +40,7 @@ public class CombatMonitorService {
     }
 
     public boolean isInCombat() {
-        boolean inCombat = MemoryConst.IN_COMBAT.readFromMemory().equals(1);
+        boolean inCombat = GameMemoryConst.IN_COMBAT.readFromMemory().equals(1);
         combatData.setInCombat(inCombat);
         return combatData.isInCombat();
     }

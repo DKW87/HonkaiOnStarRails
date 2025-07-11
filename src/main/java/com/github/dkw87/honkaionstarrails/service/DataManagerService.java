@@ -1,7 +1,7 @@
 package com.github.dkw87.honkaionstarrails.service;
 
 import com.github.dkw87.honkaionstarrails.repository.memory.CombatData;
-import com.github.dkw87.honkaionstarrails.service.constant.MemoryConst;
+import com.github.dkw87.honkaionstarrails.service.constant.GameMemoryConst;
 import com.github.dkw87.honkaionstarrails.service.constant.chain.CombatPtrChains;
 import com.github.dkw87.honkaionstarrails.service.constant.offset.CombatOffsets;
 
@@ -110,7 +110,7 @@ public class DataManagerService {
     }
 
     private void readUpdateTurnInformation() {
-        gameassemblyModule = memoryReadingService.getModuleBaseAddresses(MemoryConst.GAME_ASSEMBLY_MODULE);
+        gameassemblyModule = memoryReadingService.getModuleBaseAddresses(GameMemoryConst.GAME_ASSEMBLY_MODULE);
         combatData.setTurn(readFromGameMemory(CombatOffsets.TURN_COUNTER, CombatPtrChains.TURN_COUNTER));
     }
 

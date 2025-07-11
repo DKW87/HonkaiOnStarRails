@@ -1,6 +1,6 @@
 package com.github.dkw87.honkaionstarrails.service.constant.offset;
 
-import com.github.dkw87.honkaionstarrails.service.constant.MemoryConst;
+import com.github.dkw87.honkaionstarrails.service.constant.GameMemoryConst;
 
 /**
  * Combat offsets which use the anchor as the base and navigate to their relative
@@ -10,7 +10,7 @@ import com.github.dkw87.honkaionstarrails.service.constant.MemoryConst;
 @Deprecated
 public class CombatOffsets {
 
-    private static final long ANCHOR = MemoryConst.ANCHOR;
+    private static final long ANCHOR = GameMemoryConst.ANCHOR;
 
     // need to be updated start
     public static final long IS_COMBAT_PAUSED = ANCHOR - 0x18F1L;
