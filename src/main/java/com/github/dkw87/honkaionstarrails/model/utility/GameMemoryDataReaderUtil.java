@@ -43,7 +43,7 @@ public class GameMemoryDataReaderUtil {
 
     private Object intPtrChain(MemoryReadingService mrService, Long module, GameMemoryData data) {
         final Long address = mrService.readLongFromAddress(module + data.getOffset());
-        return mrService.followPTRChain(address, data.getPtrChain());
+        return mrService.followPtrChainToInt(address, data.getPtrChain());
     }
 
     private Object longPtrChain(MemoryReadingService mrService, Long module, GameMemoryData data) {

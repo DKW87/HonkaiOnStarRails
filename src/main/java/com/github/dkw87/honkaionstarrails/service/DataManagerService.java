@@ -174,9 +174,9 @@ public class DataManagerService {
         combatData.setAmountOfEnemies(readFromGameMemory(CombatOffsets.AMOUNT_OF_ENEMIES, CombatPtrChains.AMOUNT_OF_ENEMIES));
     }
 
-    private int readFromGameMemory(long offset, int[] ptrChain) {
+    private int readFromGameMemory(long offset, Integer[] ptrChain) {
         long address = memoryReadingService.readLongFromAddress(gameassemblyModule + offset);
-        return memoryReadingService.followPTRChain(address, ptrChain);
+        return memoryReadingService.followPtrChainToInt(address, ptrChain);
     }
 
     private void threadSleep(int millis) {
