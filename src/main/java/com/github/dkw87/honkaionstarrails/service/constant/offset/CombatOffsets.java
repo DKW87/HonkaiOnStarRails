@@ -7,6 +7,7 @@ import com.github.dkw87.honkaionstarrails.service.constant.MemoryConst;
  * position by adding/subtracting to that. Should ensure data is easily reaccessed
  * after a game update where the anchor changes.
  */
+@Deprecated
 public class CombatOffsets {
 
     private static final long ANCHOR = MemoryConst.ANCHOR;
