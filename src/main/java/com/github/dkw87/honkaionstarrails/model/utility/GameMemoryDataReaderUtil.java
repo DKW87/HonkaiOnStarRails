@@ -38,7 +38,8 @@ public class GameMemoryDataReaderUtil {
     }
 
     private Object bytePtrChain(MemoryReadingService mrService, Long module, GameMemoryData data) {
-        return null; // TODO implement
+        final Long address = mrService.readLongFromAddress(module + data.getOffset());
+        return mrService.followPtrChainToByte(address, data.getPtrChain());
     }
 
     private Object intPtrChain(MemoryReadingService mrService, Long module, GameMemoryData data) {
@@ -47,7 +48,8 @@ public class GameMemoryDataReaderUtil {
     }
 
     private Object longPtrChain(MemoryReadingService mrService, Long module, GameMemoryData data) {
-        return null; // TODO implement
+        final Long address = mrService.readLongFromAddress(module + data.getOffset());
+        return mrService.followPtrChainToLong(address, data.getPtrChain());
     }
 
     public static GameMemoryDataReaderUtil getInstance() {
