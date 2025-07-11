@@ -4,4 +4,6 @@ public class OffsetConst {
 
     public static final Long IN_COMBAT_OFFSET = 0x4C2EBA0L;
 
+    private OffsetConst() {}
+
 }

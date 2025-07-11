@@ -4,4 +4,6 @@ public class PointerConst {
 
     public static final Integer[] NULL_PTR_CHAIN = null;
 
+    private PointerConst() {}
+
 }
