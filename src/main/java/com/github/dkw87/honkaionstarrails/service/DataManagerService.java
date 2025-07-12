@@ -111,7 +111,7 @@ public class DataManagerService {
 
     private void readUpdateTurnInformation() {
         gameassemblyModule = memoryReadingService.getModuleBaseAddresses(GameMemoryConst.GAME_ASSEMBLY_MODULE);
-        combatData.setTurn(readFromGameMemory(CombatOffsets.TURN_COUNTER, CombatPtrChains.TURN_COUNTER));
+//        combatData.setTurn(readFromGameMemory(CombatOffsets.TURN_COUNTER, CombatPtrChains.TURN_COUNTER));
     }
 
     private boolean newTurnToAnalyzeIsAvailable() {
@@ -120,7 +120,7 @@ public class DataManagerService {
 
     private void updateCombatData() {
         long startTime = System.currentTimeMillis();
-        storeOffsets();
+//        storeOffsets();
 //        threadSleep(50);
 //        combatData.setCurrentTurnImage(screenshotService.takeScreenshot(null));
 //        screenshotService.saveImage(combatData.getCurrentTurnImage(), String.format("turn_%d", combatData.getTurn()));
