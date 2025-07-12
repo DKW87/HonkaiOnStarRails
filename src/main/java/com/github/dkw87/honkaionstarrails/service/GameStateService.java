@@ -22,9 +22,9 @@ public class GameStateService {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameStateService.class);
 
     // polling in millis
-    private static final int SLOW_POLL = 1000;
+    private static final int SLOW_POLL = 2000;
     private static final int NORMAL_POLL = 500;
-    private static final int FAST_POLL = 100;
+    private static final int FAST_POLL = 250;
 
     private final KeyInputService keyInputService;
     private final Label stateLabel;
@@ -63,7 +63,7 @@ public class GameStateService {
                         newState = setGameState(GameState.NOT_FOUND);
                     } else if (gameMonitorService.isGameFocused()) {
                         dataManagerService.notifyOfWork();
-                        if (combatMonitorService.runMonitor()) {
+                        if (combatMonitorService.isInCombat()) {
                             newState = setGameState(GameState.EXECUTING);
                         } else {
                             newState = setGameState(GameState.IDLE);
