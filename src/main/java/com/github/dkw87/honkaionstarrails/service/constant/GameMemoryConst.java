@@ -16,8 +16,14 @@ public class GameMemoryConst {
     private static final MemoryType TYPE_INT = MemoryType.INT;
     private static final MemoryType TYPE_LONG = MemoryType.LONG;
 
+    public static final GameMemoryData STARTED_COMBAT =
+            new  GameMemoryData(OffsetConst.STARTED_COMBAT, PointerConst.NO_PTR, TYPE_BYTE);
     public static final GameMemoryData IN_COMBAT =
-            new GameMemoryData(OffsetConst.IN_COMBAT, PointerConst.NULL_PTR_CHAIN, TYPE_BYTE);
+            new GameMemoryData(OffsetConst.IN_COMBAT, PointerConst.NO_PTR, TYPE_BYTE);
+    public static final GameMemoryData IS_COMBAT_VIEW_OPEN =
+            new GameMemoryData(OffsetConst.IS_COMBAT_VIEW_OPEN, PointerConst.NO_PTR, TYPE_BYTE);
+    public static final GameMemoryData IS_COMBAT_PAUSED =
+            new GameMemoryData(OffsetConst.IS_COMBAT_PAUSED, PointerConst.NO_PTR, TYPE_BYTE);
 
     private GameMemoryConst() {}
 
