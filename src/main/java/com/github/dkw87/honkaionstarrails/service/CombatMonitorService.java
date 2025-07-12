@@ -27,7 +27,7 @@ public class CombatMonitorService {
     }
 
     public boolean isInCombat() {
-        boolean startedCombat = GameMemoryConst.STARTED_COMBAT.readFromMemory().equals((byte) 1);
+        boolean startedCombat = GameMemoryConst.STARTED_COMBAT.readFromMemory().equals((byte) 1); // TODO: fix having to cast, no like
         boolean inCombat = GameMemoryConst.IN_COMBAT.readFromMemory().equals((byte) 1);
 
         combatData.setInCombat(startedCombat && inCombat);
