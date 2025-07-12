@@ -26,27 +26,23 @@ public class CombatMonitorService {
         this.combatData = CombatData.getInstance();
     }
 
-    public boolean runMonitor() {
-        return isInCombat();
-    }
-
     public boolean isInCombat() {
-        boolean startedCombat = GameMemoryConst.STARTED_COMBAT.readFromMemory().equals(1);
-        boolean inCombat = GameMemoryConst.IN_COMBAT.readFromMemory().equals(1);
-        if (startedCombat && inCombat) {
-            combatData.setInCombat(true);
-        }
+        boolean startedCombat = GameMemoryConst.STARTED_COMBAT.readFromMemory().equals((byte) 1);
+        boolean inCombat = GameMemoryConst.IN_COMBAT.readFromMemory().equals((byte) 1);
+
+        combatData.setInCombat(startedCombat && inCombat);
+
         return combatData.isInCombat();
     }
 
     public boolean isCombatPaused() {
-        boolean isCombatPaused = GameMemoryConst.IS_COMBAT_PAUSED.readFromMemory().equals(1);
+        boolean isCombatPaused = GameMemoryConst.IS_COMBAT_PAUSED.readFromMemory().equals((byte) 1);
         combatData.setCombatPaused(isCombatPaused);
         return combatData.isCombatPaused();
     }
 
     public boolean isCombatViewOpen() {
-        boolean isCombatViewOpen = GameMemoryConst.IS_COMBAT_VIEW_OPEN.readFromMemory().equals(1);
+        boolean isCombatViewOpen = GameMemoryConst.IS_COMBAT_VIEW_OPEN.readFromMemory().equals((byte) 1);
         combatData.setCombatViewOpen(isCombatViewOpen);
         return combatData.isCombatViewOpen();
     }
