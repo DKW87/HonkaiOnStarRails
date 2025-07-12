@@ -17,7 +17,7 @@ public class GameMemoryConst {
     private static final MemoryType TYPE_LONG = MemoryType.LONG;
 
     public static final GameMemoryData IN_COMBAT =
-            new GameMemoryData(OffsetConst.IN_COMBAT_OFFSET, PointerConst.NULL_PTR_CHAIN, TYPE_BYTE);
+            new GameMemoryData(OffsetConst.IN_COMBAT, PointerConst.NULL_PTR_CHAIN, TYPE_BYTE);
 
     private GameMemoryConst() {}
 
