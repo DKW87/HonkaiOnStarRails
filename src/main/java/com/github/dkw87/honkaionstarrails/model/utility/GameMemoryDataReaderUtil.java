@@ -2,10 +2,13 @@ package com.github.dkw87.honkaionstarrails.model.utility;
 
 import com.github.dkw87.honkaionstarrails.model.GameMemoryData;
 import com.github.dkw87.honkaionstarrails.service.MemoryReadingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GameMemoryDataReaderUtil {
 
     private static final String MEMORY_MODULE = "GameAssembly.dll";
+    private static final Logger LOGGER = LoggerFactory.getLogger(GameMemoryDataReaderUtil.class);
 
     private GameMemoryDataReaderUtil() {}
 
