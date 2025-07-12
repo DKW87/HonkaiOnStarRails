@@ -14,10 +14,6 @@ import org.slf4j.LoggerFactory;
  */
 public class CombatMonitorService {
 
-    public static volatile boolean isInCombat;
-    public static volatile boolean isCombatPaused;
-    public static volatile boolean isCombatViewOpen;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(CombatMonitorService.class);
 
     @Getter
@@ -31,36 +27,28 @@ public class CombatMonitorService {
     }
 
     public boolean runMonitor() {
-        if (isInCombat()) {
-            // TODO need to fix these methods, see below
-            isCombatPaused();
-            isCombatViewOpen();
-        }
         return isInCombat();
     }
 
     public boolean isInCombat() {
+        boolean startedCombat = GameMemoryConst.STARTED_COMBAT.readFromMemory().equals(1);
         boolean inCombat = GameMemoryConst.IN_COMBAT.readFromMemory().equals(1);
-        combatData.setInCombat(inCombat);
+        if (startedCombat && inCombat) {
+            combatData.setInCombat(true);
+        }
         return combatData.isInCombat();
     }
 
-    public void isCombatPaused() {
-//        Long gameAssemblyModule = getModuleBaseAddress(MemoryConst.GAME_ASSEMBLY_MODULE);
-//        if (moduleNotFound(gameAssemblyModule)) return;
-//
-//        byte isPaused = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_PAUSED);
-//
-//        isCombatPaused = (isPaused == 1);
+    public boolean isCombatPaused() {
+        boolean isCombatPaused = GameMemoryConst.IS_COMBAT_PAUSED.readFromMemory().equals(1);
+        combatData.setCombatPaused(isCombatPaused);
+        return combatData.isCombatPaused();
     }
 
-    public void isCombatViewOpen() {
-//        Long gameAssemblyModule = getModuleBaseAddress(MemoryConst.GAME_ASSEMBLY_MODULE);
-//        if (moduleNotFound(gameAssemblyModule)) return;
-//
-//        byte isOpen = memoryReadingService.readByteFromAddress(gameAssemblyModule + CombatOffsets.IS_COMBAT_VIEW_OPEN);
-//
-//        isCombatViewOpen = (isOpen == 1);
+    public boolean isCombatViewOpen() {
+        boolean isCombatViewOpen = GameMemoryConst.IS_COMBAT_VIEW_OPEN.readFromMemory().equals(1);
+        combatData.setCombatViewOpen(isCombatViewOpen);
+        return combatData.isCombatViewOpen();
     }
 
 }

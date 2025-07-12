@@ -16,6 +16,8 @@ import java.awt.image.BufferedImage;
 public class CombatData {
 
     private volatile boolean inCombat;
+    private volatile boolean isCombatPaused;
+    private volatile boolean isCombatViewOpen;
     private volatile int currentWave;
     private volatile int totalWaves;
     private volatile int amountOfEnemies;
