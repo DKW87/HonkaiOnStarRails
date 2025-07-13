@@ -1,8 +1,6 @@
 package com.github.dkw87.honkaionstarrails.service;
 
-import com.github.dkw87.honkaionstarrails.service.constant.offset.CombatOffsets;
-import com.github.dkw87.honkaionstarrails.service.constant.chain.CombatPtrChains;
-import com.github.dkw87.honkaionstarrails.service.constant.MemoryConst;
+import com.github.dkw87.honkaionstarrails.service.constant.GameMemoryConst;
 import com.github.dkw87.honkaionstarrails.service.extendedinterface.User32Extended;
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
@@ -28,7 +26,7 @@ public class MemoryReadingService {
 
     private MemoryReadingService() {}
 
-    protected boolean initialize() {
+    public boolean initialize() {
         LOGGER.info("Initializing MemoryReadingService...");
         if (GameMonitorService.gameWindow == null) {
             LOGGER.warn("Game window not found");
@@ -65,11 +63,11 @@ public class MemoryReadingService {
 
         LOGGER.info("Successfully attached to game process with ID: {}", processId);
         LOGGER.debug("GameAssembly.dll base address: 0x{}",
-                Long.toHexString(moduleBaseAddresses.get(MemoryConst.GAME_ASSEMBLY_MODULE)));
+                Long.toHexString(moduleBaseAddresses.get(GameMemoryConst.GAME_ASSEMBLY_MODULE)));
         return true;
     }
 
-    protected boolean findModuleBaseAddress() {
+    public boolean findModuleBaseAddress() {
         // Enumerate modules
         WinDef.HMODULE[] hModules = new WinDef.HMODULE[1024];
         IntByReference lpcbNeeded = new IntByReference();
@@ -118,7 +116,7 @@ public class MemoryReadingService {
             LOGGER.debug("Found largest module (GameAssembly.dll) at 0x{} size: {}MB",
                     Long.toHexString(largestModuleAddress), (largestModuleSize / (1024 * 1024)));
 
-            moduleBaseAddresses.put(MemoryConst.GAME_ASSEMBLY_MODULE, largestModuleAddress);
+            moduleBaseAddresses.put(GameMemoryConst.GAME_ASSEMBLY_MODULE, largestModuleAddress);
             return true;
         }
 
@@ -126,42 +124,7 @@ public class MemoryReadingService {
         return false;
     }
 
-    protected int getSkillPoints() {
-        if (!isInitialized()) return -1;
-
-        Long gameModuleBase = moduleBaseAddresses.get(MemoryConst.GAME_ASSEMBLY_MODULE);
-        if (!gameModuleExists(gameModuleBase)) return -1;
-
-        // Start with the base pointer
-        long address = gameModuleBase + CombatOffsets.SKILLPOINTS;
-
-        // Read first pointer
-        address = readLongFromAddress(address);
-
-        // Follow chain EXCEPT for the last offset
-        return followPTRChain(address, CombatPtrChains.SKILLPOINTS);
-    }
-
-    protected int followPTRChain(Long address, int[] ptrChain) {
-        if (address == 0) return -1;
-
-        for (int i = 0; i < ptrChain.length; i++) {
-            // Get next address to read from
-            long nextAddr = address + ptrChain[i];
-
-            // If this is the last step, read the int value instead of a pointer
-            if (i == ptrChain.length - 1) {
-                return readIntFromAddress(nextAddr);
-            }
-
-            // Otherwise, follow the pointer
-            address = readLongFromAddress(nextAddr);
-            if (address == 0) return -1;
-        }
-        return -1;
-    }
-
-    protected byte readByteFromAddress(long address) {
+    public Byte readByteFromAddress(long address) {
         Memory buffer = new Memory(1);
         boolean success = Kernel32.INSTANCE.ReadProcessMemory(
                 processHandle,
@@ -174,13 +137,13 @@ public class MemoryReadingService {
         if (!success) {
             LOGGER.error("Failed to read byte from address: 0x{} Error: {}",
                     Long.toHexString(address), Native.getLastError());
-            throw new RuntimeException("Read failed");
+            return null;
         }
 
         return buffer.getByte(0);
     }
 
-    protected int readIntFromAddress(long address) {
+    public Integer readIntFromAddress(long address) {
         Memory buffer = new Memory(4);
         boolean success = Kernel32.INSTANCE.ReadProcessMemory(
                 processHandle,
@@ -193,13 +156,13 @@ public class MemoryReadingService {
         if (!success) {
             LOGGER.error("Failed to read int from address: 0x{} Error: {}",
                     Long.toHexString(address), Native.getLastError());
-            return -1;
+            return null;
         }
 
         return buffer.getInt(0);
     }
 
-    protected long readLongFromAddress(long address) {
+    public Long readLongFromAddress(long address) {
         Memory buffer = new Memory(8);
         boolean success = Kernel32.INSTANCE.ReadProcessMemory(
                 processHandle,
@@ -212,20 +175,74 @@ public class MemoryReadingService {
         if (!success) {
             LOGGER.error("Failed to read pointer from address: 0x{} Error: {}",
                     Long.toHexString(address), Native.getLastError());
-            return 0;
+            return null;
         }
 
         return buffer.getLong(0);
     }
 
-    protected boolean isInitialized() {
+    public Byte followPtrChainToByte(Long address, Integer[] ptrChain) {
+        if (address == 0) return null;
+
+        for (int i = 0; i < ptrChain.length; i++) {
+            long nextAddress = address + ptrChain[i];
+
+            if (i == ptrChain.length - 1) {
+                return readByteFromAddress(nextAddress);
+            }
+
+            address = readLongFromAddress(nextAddress);
+
+            if (address == 0) return null;
+        }
+        return null;
+    }
+
+    public Integer followPtrChainToInt(Long address, Integer[] ptrChain) {
+        if (address == 0) return null;
+
+        for (int i = 0; i < ptrChain.length; i++) {
+            // Get next address to read from
+            long nextAddr = address + ptrChain[i];
+
+            // If this is the last step, read the int value instead of a pointer
+            if (i == ptrChain.length - 1) {
+                return readIntFromAddress(nextAddr);
+            }
+
+            // Otherwise, follow the pointer
+            address = readLongFromAddress(nextAddr);
+
+            if (address == 0) return null;
+        }
+        return null;
+    }
+
+    public Long followPtrChainToLong(Long address, Integer[] ptrChain) {
+        if (address == 0) return null;
+
+        for (int i = 0; i < ptrChain.length; i++) {
+            long nextAddr = address + ptrChain[i];
+
+            if (i == ptrChain.length - 1) {
+                return readLongFromAddress(nextAddr);
+            }
+
+            address = readLongFromAddress(nextAddr);
+
+            if (address == 0) return null;
+        }
+        return null;
+    }
+
+    public boolean isInitialized() {
         if (processHandle == null || moduleBaseAddresses.isEmpty()) {
             return initialize();
         }
         return true;
     }
 
-    protected boolean gameModuleExists(Long gameModuleBase) {
+    public boolean gameModuleExists(Long gameModuleBase) {
         if (gameModuleBase == null) {
             LOGGER.error("Game module base address not found");
             return false;
@@ -233,7 +250,7 @@ public class MemoryReadingService {
         return true;
     }
 
-    protected void cleanup() {
+    public void cleanup() {
         if (processHandle != null) {
             LOGGER.info("Cleaning up process handle: {}", processHandle);
             Kernel32.INSTANCE.CloseHandle(processHandle);
@@ -241,8 +258,11 @@ public class MemoryReadingService {
         }
     }
     
-    protected Long getModuleBaseAddresses(String module) {
-        return moduleBaseAddresses.get(module);
+    public Long getModuleBaseAddresses(String module) {
+        if (!isInitialized()) return null;
+        Long base = moduleBaseAddresses.get(module);
+        if (!gameModuleExists(base)) return null;
+        return base;
     }
 
     public static MemoryReadingService getInstance() {

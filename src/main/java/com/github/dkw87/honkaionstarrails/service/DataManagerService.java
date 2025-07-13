@@ -1,7 +1,8 @@
 package com.github.dkw87.honkaionstarrails.service;
 
+import com.github.dkw87.honkaionstarrails.model.GameMemoryData;
 import com.github.dkw87.honkaionstarrails.repository.memory.CombatData;
-import com.github.dkw87.honkaionstarrails.service.constant.MemoryConst;
+import com.github.dkw87.honkaionstarrails.service.constant.GameMemoryConst;
 import com.github.dkw87.honkaionstarrails.service.constant.chain.CombatPtrChains;
 import com.github.dkw87.honkaionstarrails.service.constant.offset.CombatOffsets;
 
@@ -37,7 +38,6 @@ public class DataManagerService {
     private volatile boolean shutdownRequested;
 
     private int lastAnalyzedTurn;
-    private Long gameassemblyModule;
 
     public DataManagerService() {
         LOGGER.info("Initializing DataManagerService...");
@@ -110,8 +110,10 @@ public class DataManagerService {
     }
 
     private void readUpdateTurnInformation() {
-        gameassemblyModule = memoryReadingService.getModuleBaseAddresses(MemoryConst.GAME_ASSEMBLY_MODULE);
-        combatData.setTurn(readFromGameMemory(CombatOffsets.TURN_COUNTER, CombatPtrChains.TURN_COUNTER));
+        Byte turnByte = (Byte) GameMemoryConst.CURRENT_TURN.readFromMemory();
+        int turn = turnByte.intValue();
+
+        combatData.setTurn(turn);
     }
 
     private boolean newTurnToAnalyzeIsAvailable() {
@@ -170,13 +172,11 @@ public class DataManagerService {
     }
 
     private void storeOffsets() {
-        combatData.setCurrentSkillpoints(readFromGameMemory(CombatOffsets.SKILLPOINTS, CombatPtrChains.SKILLPOINTS));
-        combatData.setAmountOfEnemies(readFromGameMemory(CombatOffsets.AMOUNT_OF_ENEMIES, CombatPtrChains.AMOUNT_OF_ENEMIES));
-    }
+        Byte skillpointsByte = (Byte) GameMemoryConst.SKILL_POINTS.readFromMemory();
+        int skillpoints = skillpointsByte.intValue();
+        combatData.setCurrentSkillpoints(skillpoints);
 
-    private int readFromGameMemory(long offset, int[] ptrChain) {
-        long address = memoryReadingService.readLongFromAddress(gameassemblyModule + offset);
-        return memoryReadingService.followPTRChain(address, ptrChain);
+//        combatData.setAmountOfEnemies(readFromGameMemory(CombatOffsets.AMOUNT_OF_ENEMIES, CombatPtrChains.AMOUNT_OF_ENEMIES));
     }
 
     private void threadSleep(int millis) {
