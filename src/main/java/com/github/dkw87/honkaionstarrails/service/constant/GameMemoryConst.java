@@ -26,6 +26,8 @@ public class GameMemoryConst {
             new GameMemoryData(OffsetConst.IS_COMBAT_PAUSED, PointerConst.NO_PTR, TYPE_BYTE);
     public static final GameMemoryData CURRENT_TURN =
             new GameMemoryData(OffsetConst.CURRENT_TURN, PointerConst.NO_PTR, TYPE_BYTE);
+    public static final GameMemoryData SKILL_POINTS =
+            new GameMemoryData(OffsetConst.SKILL_POINTS, PointerConst.SKILL_POINTS, TYPE_BYTE);
 
     private GameMemoryConst() {}
 
