@@ -172,7 +172,8 @@ public class DataManagerService {
     }
 
     private void storeOffsets() {
-        Integer skillpoints = (Integer) GameMemoryConst.SKILL_POINTS.readFromMemory();
+        Byte skillpointsByte = (Byte) GameMemoryConst.SKILL_POINTS.readFromMemory();
+        int skillpoints = skillpointsByte.intValue();
         combatData.setCurrentSkillpoints(skillpoints);
 
 //        combatData.setAmountOfEnemies(readFromGameMemory(CombatOffsets.AMOUNT_OF_ENEMIES, CombatPtrChains.AMOUNT_OF_ENEMIES));
