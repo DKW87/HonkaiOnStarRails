@@ -1,3 +1,5 @@
+# <p align="center">--- Currently on hiatus ---</p>
+
 # Honkai On Star Rails 
 
 ## ⚠️ PLEASE READ THIS DISCLAIMER ⚠️
