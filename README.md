@@ -1,4 +1,4 @@
-# <p align="center">--- Currently on hiatus ---</p>
+# <p align="center">-- project is currently on hiatus until further notice --</p>
 
 # Honkai On Star Rails 
 
